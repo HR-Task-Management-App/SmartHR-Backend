@@ -8,7 +8,7 @@ public class BadApiRequestException extends RuntimeException{
     public BadApiRequestException(){
         super("Bad Request !!");
     }
-    public BadApiRequestException(String message){
-        super(message);
+    public BadApiRequestException(String error){
+        super(error);
     }
 }

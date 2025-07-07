@@ -19,6 +19,7 @@ public class UserController {
     @Autowired
     private UserServiceInterface userServiceInterface;
 
+
     @PostMapping //create
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto){
         UserDto user =  userServiceInterface.createUser(userDto);

@@ -1,7 +1,8 @@
 package com.hrms.backend.entities;
 
-import com.hrms.backend.dtos.entityDtos.Role;
 import lombok.*;
+import org.bson.types.ObjectId;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -10,9 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 public class User implements UserDetails {
 
     @Id
-    private String userId;
+    private ObjectId userId;
 
     private String name;
 
@@ -34,9 +33,20 @@ public class User implements UserDetails {
 
     private String password;
 
+    @Field(write = Field.Write.ALWAYS)
     private String gender;
 
+    @CreatedDate
+    private String createdAt;
+
     private Role role;
+
+    @Field(write = Field.Write.ALWAYS)
+    private String companyCode;
+
+    @Field(write = Field.Write.ALWAYS)
+    private String imageUrl;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -45,7 +55,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return "";
+        return this.getEmail();
     }
 
     @Override

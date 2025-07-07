@@ -1,6 +1,6 @@
 package com.hrms.backend;
 
-import com.hrms.backend.dtos.entityDtos.Role;
+import com.hrms.backend.entities.Role;
 import com.hrms.backend.entities.User;
 import com.hrms.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

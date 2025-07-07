@@ -1,6 +1,6 @@
 package com.hrms.backend.exceptions;
 
-import com.hrms.backend.dtos.response_message.ApiResponseMessage;
+import com.hrms.backend.dtos.response_message.ErrorApiResponseMessage;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -18,8 +18,8 @@ public class GlobalExceptionHandler {
 
     //handing resource not found custom exception
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiResponseMessage> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
-        ApiResponseMessage response = ApiResponseMessage.builder().message(ex.getMessage()).status(HttpStatus.NOT_FOUND).success(true).build();
+    public ResponseEntity<ErrorApiResponseMessage> resourceNotFoundExceptionHandler(ResourceNotFoundException ex){
+        ErrorApiResponseMessage response = ErrorApiResponseMessage.builder().error(ex.getMessage()).build();
         return new ResponseEntity<>(response,HttpStatus.NOT_FOUND);
     }
 
@@ -39,8 +39,8 @@ public class GlobalExceptionHandler {
 
     //handling bad request custom exception
     @ExceptionHandler(BadApiRequestException.class)
-    public ResponseEntity<ApiResponseMessage> resourceNotFoundExceptionHandler(BadApiRequestException ex){
-        ApiResponseMessage response = ApiResponseMessage.builder().message(ex.getMessage()).status(HttpStatus.BAD_REQUEST).success(true).build();
+    public ResponseEntity<ErrorApiResponseMessage> resourceNotFoundExceptionHandler(BadApiRequestException ex){
+        ErrorApiResponseMessage response = ErrorApiResponseMessage.builder().error(ex.getMessage()).build();
         return new ResponseEntity<>(response,HttpStatus.BAD_REQUEST);
     }
 }
