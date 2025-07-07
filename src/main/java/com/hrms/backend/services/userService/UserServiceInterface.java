@@ -3,9 +3,6 @@ package com.hrms.backend.services.userService;
 
 import com.hrms.backend.dtos.entityDtos.UserDto;
 
-import java.io.IOException;
-import java.util.List;
-
 public interface UserServiceInterface {
 
     //create
