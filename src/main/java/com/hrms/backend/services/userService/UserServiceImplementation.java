@@ -2,39 +2,27 @@ package com.hrms.backend.services.userService;
 
 import com.hrms.backend.dtos.entityDtos.UserDto;
 import com.hrms.backend.entities.Company;
-import com.hrms.backend.entities.EmailConfirmationToken;
 import com.hrms.backend.entities.Role;
 import com.hrms.backend.entities.User;
 import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.exceptions.ResourceNotFoundException;
 import com.hrms.backend.repositories.CompanyRepository;
-import com.hrms.backend.repositories.EmailConfirmationTokenRepository;
 import com.hrms.backend.repositories.UserRepository;
-import com.hrms.backend.services.emailService.EmailServiceInterface;
 import com.hrms.backend.utils.CodeGenerator;
-import com.hrms.backend.utils.ThymeleafContentBuilder;
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.keygen.KeyGenerators;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class UserServiceImplementation implements UserServiceInterface {
-
-    @Autowired
-    private EmailServiceInterface emailServiceInterface;
-
-    @Autowired
-    private ThymeleafContentBuilder thymeleafContentBuilder;
-
-    @Autowired
-    private EmailConfirmationTokenRepository emailTokenRepo;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -55,6 +43,7 @@ public class UserServiceImplementation implements UserServiceInterface {
             throw new BadApiRequestException("User with this email already exists!");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setCreatedAt(LocalDateTime.now().toString());
 
         if (user.getRole() == Role.ROLE_HR) {
             String companyCode = CodeGenerator.generateBase64Code();
@@ -66,7 +55,8 @@ public class UserServiceImplementation implements UserServiceInterface {
             User savedUser = userRepository.save(user);
             Company company = new Company();
             company.setCompanyCode(companyCode);
-            company.setHr(savedUser.getUserId());
+            company.setHrId(savedUser.getUserId());
+            company.setCreatedDate(LocalDateTime.now().toString());
             companyRepository.save(company);
 
             return modelMapper.map(savedUser, UserDto.class);
@@ -77,31 +67,13 @@ public class UserServiceImplementation implements UserServiceInterface {
                         .orElseThrow(() -> new ResourceNotFoundException("Company with this code not found"));
 
                 // Save user WITHOUT setting companyCode yet
-                String companyCode = user.getCompanyCode(); // store temporarily
                 user.setCompanyCode(null);
                 User savedUser = userRepository.save(user);
-                String hrEmail = userRepository.findByUserId(company.getHr())
-                        .orElseThrow(() -> new ResourceNotFoundException("HR in this company not found"))
-                        .getEmail();
-
-                String token = Base64.getUrlEncoder().withoutPadding()
-                        .encodeToString(KeyGenerators.secureRandom(15).generateKey());
-                EmailConfirmationToken t = EmailConfirmationToken.builder()
-                        .token(token)
-                        .createdAt(LocalDateTime.now())
-                        .companyCode(companyCode)
-                        .user(savedUser).build();
-                emailTokenRepo.save(t);
-
-                String link = "http://localhost:8080" + "/api/invite/confirm?token=" + token;
-
-                Map<String, Object> variables = new HashMap<>();
-                variables.put("userName", user.getName());
-                variables.put("userEmail", user.getEmail());
-                variables.put("approveLink", link);
-                String htmlContent = thymeleafContentBuilder.build("invite-email", variables);
-                emailServiceInterface.sendHtmlEmail(hrEmail, "Approve Employee", htmlContent);
-
+                //put employee in waitlist of that company
+                Set<String> waitListEmployee = company.getWaitListEmployeesId();
+                if(waitListEmployee==null) waitListEmployee = new HashSet<>();
+                waitListEmployee.add(savedUser.getUserId());
+                companyRepository.save(company);
                 return modelMapper.map(savedUser, UserDto.class);
             } else {
                 User savedUser = userRepository.save(user);
@@ -110,19 +82,11 @@ public class UserServiceImplementation implements UserServiceInterface {
         }
     }
 
+    @Override
+    public UserDto updateUser(UserDto userDto, String userId) {
+        return null;
+    }
 
-
-
-//    @Override
-//    public UserDto updateUser(UserDto userDto, String userId) {
-//        User user = userRepository.findById(userId).orElseThrow(()-> new ResourceNotFoundException("User not found"));
-//        user.setImageName(userDto.getImageName());
-//        user.setName(userDto.getName());
-//        user.setGender(userDto.getGender());
-//        user.setAbout(userDto.getAbout());
-//        userRepository.save(user);
-//        return entityToDto(user);
-//    }
 
 //    @Override
 //    public void deleteUser(String userId) {

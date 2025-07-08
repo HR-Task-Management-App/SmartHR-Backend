@@ -2,7 +2,6 @@ package com.hrms.backend.entities;
 
 import lombok.*;
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -23,7 +22,7 @@ import java.util.Set;
 public class User implements UserDetails {
 
     @Id
-    private ObjectId userId;
+    private String userId;
 
     private String name;
 
@@ -36,7 +35,6 @@ public class User implements UserDetails {
     @Field(write = Field.Write.ALWAYS)
     private String gender;
 
-    @CreatedDate
     private String createdAt;
 
     private Role role;

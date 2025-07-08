@@ -66,7 +66,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/users").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/invite/confirm").permitAll()
-                        .anyRequest().hasAnyRole("ADMIN")
+                        .requestMatchers("/companies/**").hasAuthority("ROLE_HR")
+                        .anyRequest().hasAuthority("ROLE_ADMIN")
         ).exceptionHandling(ex -> ex
                 .accessDeniedHandler(customAccessDeniedHandler)
         );

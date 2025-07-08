@@ -15,8 +15,10 @@ public class CustomeUserDetailsService implements UserDetailsService {
     private UserRepository userRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // username is email in this project
-        return userRepository.findByEmail(username).orElseThrow(()-> new ResourceNotFoundException("User with this email not found"));
+    public UserDetails loadUserByUsername(String emailOrId) throws UsernameNotFoundException {
+        // support both email (for login) and userId (for token validation)
+        return userRepository.findByEmail(emailOrId)
+                .or(() -> userRepository.findByUserId(emailOrId))
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

@@ -1,8 +1,12 @@
 package com.hrms.backend.security;
 
+import com.hrms.backend.entities.User;
+import com.hrms.backend.exceptions.BadApiRequestException;
+import com.hrms.backend.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -20,14 +24,23 @@ public class JwtHelper {
     @Value("${jwt.secret}")
     private String SECRET_KEY;
 
-    private static final String CLAIM_USERNAME = "username";
+    @Autowired
+    private UserRepository userRepository;
+
+    private static final String CLAIM_USERID = "userId";
     private static final String CLAIM_ROLE = "role";
 
     public static final long TOKEN_VALIDITY = 5*24*60*60*1000; // 5 days in ms
 
-    //retrieve username(email here) from token
-    public String getUsernameFromToken(String token){
-        return getClaimFromToken(token,claims -> claims.get("username",String.class));
+//    //retrieve username(email here) from token
+//    public String getUsernameFromToken(String token){
+//       String userId = getUserIdFromToken(token);
+//       User user = userRepository.findByUserId(userId).orElseThrow(()-> new BadApiRequestException("User does not exits"));
+//       return user.getUsername();
+//    }
+
+    public String getUserIdFromToken(String token) {
+        return getClaimFromToken(token, claims ->  claims.get(CLAIM_USERID,String.class));
     }
 
     public <T> T getClaimFromToken(String token, Function<Claims,T> claimsResolver){
@@ -61,7 +74,12 @@ public class JwtHelper {
     public String generateToken(UserDetails userDetails, String role){
         Map<String,Object> claims = new HashMap<>();
         claims.put(CLAIM_ROLE,role);
-        claims.put(CLAIM_USERNAME,userDetails.getUsername()); //email
+        // Cast to your actual User object to get userId
+        if (userDetails instanceof User user) {
+            claims.put(CLAIM_USERID, user.getUserId());
+        } else {
+            throw new IllegalArgumentException("Expected UserDetails to be instance of User");
+        }
         return doGenerateToken(claims);
     }
 
@@ -78,9 +96,13 @@ public class JwtHelper {
                 .compact();
     }
 
-    public Boolean validateToken(String token,UserDetails userDetails){
-        String username = getUsernameFromToken(token);
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        String userId = getUserIdFromToken(token);
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new BadApiRequestException("User not found"));
+        String username = user.getUsername();
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
     }
+
 
 }

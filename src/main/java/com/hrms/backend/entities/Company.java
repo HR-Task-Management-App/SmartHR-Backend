@@ -2,11 +2,14 @@ package com.hrms.backend.entities;
 
 import lombok.*;
 import org.bson.types.ObjectId;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -17,16 +20,20 @@ import java.util.List;
 public class Company {
 
     @Id
-    private ObjectId id;
+    private String id;
 
     private String companyCode;
 
+    @Field(write = Field.Write.ALWAYS)
     private String companyName;
 
-    @CreatedDate
     private String createdDate;
 
-    private ObjectId hr;
+    private String hrId;
 
-    private List<ObjectId> employees;
+    @Field(write = Field.Write.ALWAYS)
+    private Set<String> employeesId = new HashSet<>();
+
+    @Field(write = Field.Write.ALWAYS)
+    private Set<String> waitListEmployeesId = new HashSet<>(); // employee that HR does not still confirm
 }

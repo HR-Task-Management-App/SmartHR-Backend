@@ -1,6 +1,7 @@
 package com.hrms.backend.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hrms.backend.entities.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -45,7 +46,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
             token = requestHeader.substring(7);
             try {
-                username = jwtHelper.getUsernameFromToken(token);
+                String userId = jwtHelper.getUserIdFromToken(token);
+                User user = (User) userDetailsService.loadUserByUsername(userId); // NOTE: See next step
+                username = user.getUsername();
                 logger.info("Username {}", username);
             } catch (ExpiredJwtException e) {
                 logger.error("Token expired: {}", e.getMessage());

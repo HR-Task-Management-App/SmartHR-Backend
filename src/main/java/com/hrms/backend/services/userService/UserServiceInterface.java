@@ -8,8 +8,8 @@ public interface UserServiceInterface {
     //create
     UserDto createUser(UserDto userDto);
 
-//    //update
-//    UserDto updateUser(UserDto userDto,String userId);
+    //update
+    UserDto updateUser(UserDto userDto,String userId);
 //
 //    //delete
 //    void deleteUser(String userId) throws IOException;
