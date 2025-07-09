@@ -1,20 +1,19 @@
 package com.hrms.backend.services.companyService;
 
-import com.hrms.backend.dtos.responseDtos.company.CompanyWaitlistEmployees;
+import com.hrms.backend.dtos.entityDtos.User.UserListResponse;
+import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.entities.Company;
 import com.hrms.backend.entities.User;
+import com.hrms.backend.entities.enums.JoiningStatus;
 import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.repositories.CompanyRepository;
 import com.hrms.backend.repositories.UserRepository;
-import com.hrms.backend.security.JwtHelper;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class CompanyServiceImpl implements CompanyServiceInterface {
@@ -27,22 +26,58 @@ public class CompanyServiceImpl implements CompanyServiceInterface {
     private UserRepository userRepository;
 
     @Override
-    public CompanyWaitlistEmployees getWaitlistEmployeesId(String hrUserId) {
-        Company company = companyRepository.findByHrId(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
-        return CompanyWaitlistEmployees.builder().
-                companyCode(company.getCompanyCode()).
-                waitlistEmployeeIds(company.getWaitListEmployeesId()).build();
+    public UserListResponse getWaitlistEmployees(String hrUserId) {
+        Company company = companyRepository.findByHr(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
+        Set<String> waitListEmployeesId = company.getWaitListEmployees();
+
+        List<User> users = userRepository.findAllByIdIn(waitListEmployeesId);
+
+        List<UserInfo> userInfos = users.stream()
+                .map(user -> UserInfo.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .imageUrl(user.getImageUrl())
+                        .build())
+                .toList();
+
+        return UserListResponse.builder()
+                .companyCode(company.getCompanyCode())
+                .users(userInfos)
+                .build();
+    }
+
+    @Override
+    public UserListResponse getEmployeesOfCompany(String hrUserId) {
+        Company company = companyRepository.findByHr(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
+        Set<String> employeesId = company.getEmployees();
+        List<User> users = userRepository.findAllByIdIn(employeesId);
+
+        List<UserInfo> userInfos = users.stream()
+                .map(user -> UserInfo.builder()
+                        .id(user.getId())
+                        .name(user.getName())
+                        .email(user.getEmail())
+                        .imageUrl(user.getImageUrl())
+                        .build())
+                .toList();
+
+        return UserListResponse.builder()
+                .companyCode(company.getCompanyCode())
+                .users(userInfos)
+                .build();
     }
 
     @Override
     public SuccessApiResponseMessage acceptEmployee(String hrUserId,String empUserId) {
-        Company company = companyRepository.findByHrId(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
-        User user = userRepository.findByUserId(empUserId).orElseThrow(()-> new BadApiRequestException("User does not exits"));
-        if(company.getWaitListEmployeesId().contains(empUserId)){
-            company.getEmployeesId().add(empUserId);
-            company.getWaitListEmployeesId().remove(empUserId);
+        Company company = companyRepository.findByHr(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
+        User user = userRepository.findById(empUserId).orElseThrow(()-> new BadApiRequestException("User does not exits"));
+        if(company.getWaitListEmployees().contains(empUserId)){
+            company.getEmployees().add(empUserId);
+            company.getWaitListEmployees().remove(empUserId);
             Company save = companyRepository.save(company);
             user.setCompanyCode(save.getCompanyCode());
+            user.setJoiningStatus(JoiningStatus.APPROVED);
             userRepository.save(user);
         }
         else{
@@ -53,10 +88,13 @@ public class CompanyServiceImpl implements CompanyServiceInterface {
 
     @Override
     public SuccessApiResponseMessage rejectEmployee(String hrUserId,String empUserId) {
-        Company company = companyRepository.findByHrId(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
-        if(company.getWaitListEmployeesId().contains(empUserId)){
-            company.getWaitListEmployeesId().remove(empUserId);
+        Company company = companyRepository.findByHr(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
+        User user = userRepository.findById(empUserId).orElseThrow(()-> new BadApiRequestException("User does not exits"));
+        if(company.getWaitListEmployees().contains(empUserId)){
+            user.setJoiningStatus(JoiningStatus.NA);
+            company.getWaitListEmployees().remove(empUserId);
             companyRepository.save(company);
+            userRepository.save(user);
         }
         else{
             throw new BadApiRequestException("This Employee does exits in company's waitlist");
@@ -66,11 +104,12 @@ public class CompanyServiceImpl implements CompanyServiceInterface {
 
     @Override
     public SuccessApiResponseMessage removeEmployeeFromCompany(String hrUserId,String empUserId) {
-        Company company = companyRepository.findByHrId(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
-        User user = userRepository.findByUserId(empUserId).orElseThrow(()-> new BadApiRequestException("User does not exits"));
-        if(company.getEmployeesId().contains(empUserId)){
-            company.getEmployeesId().remove(empUserId);
+        Company company = companyRepository.findByHr(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
+        User user = userRepository.findById(empUserId).orElseThrow(()-> new BadApiRequestException("User does not exits"));
+        if(company.getEmployees().contains(empUserId)){
+            company.getEmployees().remove(empUserId);
             user.setCompanyCode(null);
+            user.setJoiningStatus(JoiningStatus.NA);
             userRepository.save(user);
             companyRepository.save(company);
         }

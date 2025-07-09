@@ -65,8 +65,9 @@ public class SecurityConfig {
                 request.requestMatchers(PUBLIC_URLS).permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/users").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/users").authenticated()
                         .requestMatchers(HttpMethod.GET,"/api/invite/confirm").permitAll()
-                        .requestMatchers("/companies/**").hasAuthority("ROLE_HR")
+                        .requestMatchers("/companies/**","/tasks").hasAuthority("ROLE_HR")
                         .anyRequest().hasAuthority("ROLE_ADMIN")
         ).exceptionHandling(ex -> ex
                 .accessDeniedHandler(customAccessDeniedHandler)

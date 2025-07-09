@@ -1,6 +1,7 @@
-package com.hrms.backend.dtos.entityDtos;
+package com.hrms.backend.dtos.entityDtos.User;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.hrms.backend.entities.enums.JoiningStatus;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -14,7 +15,7 @@ import lombok.*;
 public class UserDto {
 
     //don't send this from client
-    private String userId;
+    private String id;
 
     @NotBlank(message = "Name is required")
     @Size(min = 3,max = 50,message = "Name should be between 3 to 50 character")
@@ -48,6 +49,8 @@ public class UserDto {
             message = "Role must be one of: ROLE_USER, or ROLE_HR"
     )
     private String role;
+
+    private JoiningStatus joiningStatus;
 
     @Size(min = 7,max = 7,message = "Company code must be exactly 7 character")
     //only for employee, for hr we will assign it auto.

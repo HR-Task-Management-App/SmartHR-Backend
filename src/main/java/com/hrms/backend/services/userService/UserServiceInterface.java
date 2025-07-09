@@ -1,7 +1,7 @@
 package com.hrms.backend.services.userService;
 
 
-import com.hrms.backend.dtos.entityDtos.UserDto;
+import com.hrms.backend.dtos.entityDtos.User.UserDto;
 
 public interface UserServiceInterface {
 
@@ -17,8 +17,8 @@ public interface UserServiceInterface {
 //    //getAllUser
 ////    PageableResponse<UserDto> getAllUser(int pageNumber, int pageSize, String sortBy, String sortDir);
 //
-//    //getUserById
-//    UserDto getUserById(String userId);
+    //getUserById
+    UserDto getUserById(String userId);
 //
 //    //getUserByEmail
 //    UserDto getUserByEmail(String email);

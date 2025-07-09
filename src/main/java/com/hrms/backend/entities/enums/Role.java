@@ -1,4 +1,4 @@
-package com.hrms.backend.entities;
+package com.hrms.backend.entities.enums;
 
 public enum Role {
     ROLE_USER,

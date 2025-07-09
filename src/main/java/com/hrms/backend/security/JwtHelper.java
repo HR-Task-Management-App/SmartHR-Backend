@@ -76,7 +76,7 @@ public class JwtHelper {
         claims.put(CLAIM_ROLE,role);
         // Cast to your actual User object to get userId
         if (userDetails instanceof User user) {
-            claims.put(CLAIM_USERID, user.getUserId());
+            claims.put(CLAIM_USERID, user.getId());
         } else {
             throw new IllegalArgumentException("Expected UserDetails to be instance of User");
         }
@@ -98,7 +98,7 @@ public class JwtHelper {
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         String userId = getUserIdFromToken(token);
-        User user = userRepository.findByUserId(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadApiRequestException("User not found"));
         String username = user.getUsername();
         return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);

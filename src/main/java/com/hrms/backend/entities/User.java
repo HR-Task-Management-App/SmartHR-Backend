@@ -1,7 +1,8 @@
 package com.hrms.backend.entities;
 
+import com.hrms.backend.entities.enums.JoiningStatus;
+import com.hrms.backend.entities.enums.Role;
 import lombok.*;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -9,8 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -22,7 +22,7 @@ import java.util.Set;
 public class User implements UserDetails {
 
     @Id
-    private String userId;
+    private String id;
 
     private String name;
 
@@ -43,7 +43,13 @@ public class User implements UserDetails {
     private String companyCode;
 
     @Field(write = Field.Write.ALWAYS)
+    private JoiningStatus joiningStatus;
+
+    @Field(write = Field.Write.ALWAYS)
     private String imageUrl;
+
+    @Field(write = Field.Write.ALWAYS)
+    private Set<String> tasks = new HashSet<>();
 
 
     @Override

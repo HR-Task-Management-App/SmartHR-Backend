@@ -1,4 +1,4 @@
-package com.hrms.backend.dtos.entityDtos;
+package com.hrms.backend.dtos.entityDtos.Company;
 
 import jakarta.validation.constraints.Size;
 import lombok.*;

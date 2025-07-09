@@ -1,8 +1,9 @@
 package com.hrms.backend;
 
-import com.hrms.backend.entities.Role;
+import com.hrms.backend.entities.enums.Role;
 import com.hrms.backend.entities.User;
 import com.hrms.backend.repositories.UserRepository;
+import com.hrms.backend.services.superbaseImageStorageService.SuperbaseImageStorageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,6 +22,9 @@ public class HrmsApplication implements CommandLineRunner {
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+
+	@Autowired
+	private SuperbaseImageStorageServiceImpl superbaseImageStorageService;
 
 	@Override
 	public void run(String... args) throws Exception {

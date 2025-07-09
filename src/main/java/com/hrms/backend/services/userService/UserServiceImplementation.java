@@ -1,24 +1,23 @@
 package com.hrms.backend.services.userService;
 
-import com.hrms.backend.dtos.entityDtos.UserDto;
+import com.hrms.backend.dtos.entityDtos.User.UserDto;
 import com.hrms.backend.entities.Company;
-import com.hrms.backend.entities.Role;
+import com.hrms.backend.entities.enums.JoiningStatus;
+import com.hrms.backend.entities.enums.Role;
 import com.hrms.backend.entities.User;
 import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.exceptions.ResourceNotFoundException;
 import com.hrms.backend.repositories.CompanyRepository;
 import com.hrms.backend.repositories.UserRepository;
 import com.hrms.backend.utils.CodeGenerator;
-import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -51,11 +50,12 @@ public class UserServiceImplementation implements UserServiceInterface {
                 companyCode = CodeGenerator.generateBase64Code();
             }
             user.setCompanyCode(companyCode);
+            user.setJoiningStatus(JoiningStatus.APPROVED);
 
             User savedUser = userRepository.save(user);
             Company company = new Company();
             company.setCompanyCode(companyCode);
-            company.setHrId(savedUser.getUserId());
+            company.setHr(savedUser.getId());
             company.setCreatedDate(LocalDateTime.now().toString());
             companyRepository.save(company);
 
@@ -68,14 +68,16 @@ public class UserServiceImplementation implements UserServiceInterface {
 
                 // Save user WITHOUT setting companyCode yet
                 user.setCompanyCode(null);
+                user.setJoiningStatus(JoiningStatus.PENDING);
                 User savedUser = userRepository.save(user);
                 //put employee in waitlist of that company
-                Set<String> waitListEmployee = company.getWaitListEmployeesId();
+                Set<String> waitListEmployee = company.getWaitListEmployees();
                 if(waitListEmployee==null) waitListEmployee = new HashSet<>();
-                waitListEmployee.add(savedUser.getUserId());
+                waitListEmployee.add(savedUser.getId());
                 companyRepository.save(company);
                 return modelMapper.map(savedUser, UserDto.class);
             } else {
+                user.setJoiningStatus(JoiningStatus.NA);
                 User savedUser = userRepository.save(user);
                 return modelMapper.map(savedUser, UserDto.class);
             }
@@ -85,6 +87,14 @@ public class UserServiceImplementation implements UserServiceInterface {
     @Override
     public UserDto updateUser(UserDto userDto, String userId) {
         return null;
+    }
+
+    //
+        //getUserById
+    @Override
+    public UserDto getUserById(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(()-> new RuntimeException("Not able to fetch user profile"));
+        return modelMapper.map(user,UserDto.class);
     }
 
 

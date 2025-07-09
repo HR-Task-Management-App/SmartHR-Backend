@@ -1,14 +1,13 @@
 package com.hrms.backend.services.companyService;
 
-import com.hrms.backend.dtos.responseDtos.company.CompanyWaitlistEmployees;
+import com.hrms.backend.dtos.entityDtos.User.UserListResponse;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
-import org.bson.types.ObjectId;
-
-import java.util.List;
 
 public interface CompanyServiceInterface {
 
-    CompanyWaitlistEmployees getWaitlistEmployeesId(String hrUserId);
+    UserListResponse getWaitlistEmployees(String hrUserId);
+
+    UserListResponse getEmployeesOfCompany(String hrUserId);
 
     SuccessApiResponseMessage acceptEmployee(String hrUserId,String empUserId);
 

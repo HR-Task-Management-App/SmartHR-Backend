@@ -1,7 +1,7 @@
 package com.hrms.backend.dtos.token_request_response;
 
 
-import com.hrms.backend.dtos.entityDtos.UserDto;
+import com.hrms.backend.dtos.entityDtos.User.UserDto;
 import lombok.*;
 
 @Getter

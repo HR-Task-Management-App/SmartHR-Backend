@@ -1,6 +1,5 @@
 package com.hrms.backend.services;
 
-import com.hrms.backend.exceptions.ResourceNotFoundException;
 import com.hrms.backend.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +17,7 @@ public class CustomeUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String emailOrId) throws UsernameNotFoundException {
         // support both email (for login) and userId (for token validation)
         return userRepository.findByEmail(emailOrId)
-                .or(() -> userRepository.findByUserId(emailOrId))
+                .or(() -> userRepository.findById(emailOrId))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 }

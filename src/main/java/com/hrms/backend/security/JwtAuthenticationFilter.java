@@ -43,12 +43,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String username = null;
         String token = null;
 
+
         if (requestHeader != null && requestHeader.startsWith("Bearer")) {
             token = requestHeader.substring(7);
             try {
                 String userId = jwtHelper.getUserIdFromToken(token);
                 User user = (User) userDetailsService.loadUserByUsername(userId); // NOTE: See next step
                 username = user.getUsername();
+                logger.info("Token: {}", token);
+                logger.info("UserId from Token: {}", userId);
+                logger.info("User Authorities: {}", user.getAuthorities());
+
                 logger.info("Username {}", username);
             } catch (ExpiredJwtException e) {
                 logger.error("Token expired: {}", e.getMessage());
@@ -75,6 +80,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } else {
             logger.info("Header is null or not start with Bearer");
         }
+
 
 
         if(username!=null && SecurityContextHolder.getContext().getAuthentication()==null){

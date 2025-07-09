@@ -1,6 +1,6 @@
 package com.hrms.backend.controllers;
 
-import com.hrms.backend.dtos.entityDtos.UserDto;
+import com.hrms.backend.dtos.entityDtos.User.UserDto;
 import com.hrms.backend.dtos.token_request_response.JwtRequest;
 import com.hrms.backend.dtos.token_request_response.JwtResponse;
 import com.hrms.backend.entities.User;
