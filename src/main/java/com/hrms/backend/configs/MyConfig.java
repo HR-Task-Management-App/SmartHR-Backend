@@ -8,7 +8,12 @@ import org.springframework.context.annotation.Configuration;
 public class MyConfig {
 
     @Bean
-    public ModelMapper mapper(){
-        return new ModelMapper();
+    public ModelMapper mapper() {
+        ModelMapper modelMapper = new ModelMapper();
+
+        // Skip only nulls, but allow blank strings (like "")
+        modelMapper.getConfiguration().setSkipNullEnabled(true);
+        return modelMapper;
     }
+
 }

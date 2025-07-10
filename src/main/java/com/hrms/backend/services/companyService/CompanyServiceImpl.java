@@ -1,11 +1,10 @@
 package com.hrms.backend.services.companyService;
 
-import com.hrms.backend.dtos.entityDtos.User.UserListResponse;
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
+import com.hrms.backend.dtos.entityDtos.User.UserListResponse;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.entities.Company;
 import com.hrms.backend.entities.User;
-import com.hrms.backend.entities.enums.JoiningStatus;
 import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.repositories.CompanyRepository;
 import com.hrms.backend.repositories.UserRepository;
@@ -77,7 +76,7 @@ public class CompanyServiceImpl implements CompanyServiceInterface {
             company.getWaitListEmployees().remove(empUserId);
             Company save = companyRepository.save(company);
             user.setCompanyCode(save.getCompanyCode());
-            user.setJoiningStatus(JoiningStatus.APPROVED);
+            user.setWaitingCompanyCode(null);
             userRepository.save(user);
         }
         else{
@@ -91,7 +90,7 @@ public class CompanyServiceImpl implements CompanyServiceInterface {
         Company company = companyRepository.findByHr(hrUserId).orElseThrow(()-> new BadApiRequestException("Company does not exist!!"));
         User user = userRepository.findById(empUserId).orElseThrow(()-> new BadApiRequestException("User does not exits"));
         if(company.getWaitListEmployees().contains(empUserId)){
-            user.setJoiningStatus(JoiningStatus.NA);
+            user.setWaitingCompanyCode(null);
             company.getWaitListEmployees().remove(empUserId);
             companyRepository.save(company);
             userRepository.save(user);
@@ -109,7 +108,6 @@ public class CompanyServiceImpl implements CompanyServiceInterface {
         if(company.getEmployees().contains(empUserId)){
             company.getEmployees().remove(empUserId);
             user.setCompanyCode(null);
-            user.setJoiningStatus(JoiningStatus.NA);
             userRepository.save(user);
             companyRepository.save(company);
         }

@@ -62,11 +62,11 @@ public class SecurityConfig {
         //the order of requestMatchers() matters.
         // Authorization rules are evaluated in the sequence they are declared, and the first matching rule is applied.
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(PUBLIC_URLS).permitAll()
+                request.requestMatchers(PUBLIC_URLS).permitAll() // later do for user controller only for hr {companyCode part}
                         .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/users").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/users").authenticated()
-                        .requestMatchers(HttpMethod.GET,"/api/invite/confirm").permitAll()
+                        .requestMatchers("/users/leave-company","/users/remove-wait-company").hasAuthority("ROLE_USER")
+                        .requestMatchers("/users","/users/**").authenticated()
                         .requestMatchers("/companies/**","/tasks").hasAuthority("ROLE_HR")
                         .anyRequest().hasAuthority("ROLE_ADMIN")
         ).exceptionHandling(ex -> ex

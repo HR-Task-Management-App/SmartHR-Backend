@@ -1,6 +1,6 @@
 package com.hrms.backend.controllers;
 
-import com.hrms.backend.dtos.entityDtos.User.UserDto;
+import com.hrms.backend.dtos.entityDtos.User.response.UserResponseDto;
 import com.hrms.backend.dtos.token_request_response.JwtRequest;
 import com.hrms.backend.dtos.token_request_response.JwtResponse;
 import com.hrms.backend.entities.User;
@@ -50,7 +50,7 @@ public class AuthenticationController {
         this.doAuthenticate(jwtRequest.getEmail(), jwtRequest.getPassword());
         User user = (User) userDetailsService.loadUserByUsername(jwtRequest.getEmail());
         String token = jwtHelper.generateToken(user, user.getRole().name());
-        JwtResponse jwtResponse = JwtResponse.builder().token(token).user(modelMapper.map(user, UserDto.class)).build();
+        JwtResponse jwtResponse = JwtResponse.builder().token(token).user(modelMapper.map(user, UserResponseDto.class)).build();
         return ResponseEntity.ok(jwtResponse);
     }
 

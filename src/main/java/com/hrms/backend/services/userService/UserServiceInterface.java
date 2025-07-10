@@ -1,29 +1,33 @@
 package com.hrms.backend.services.userService;
 
 
-import com.hrms.backend.dtos.entityDtos.User.UserDto;
+import com.hrms.backend.dtos.entityDtos.User.request.CreateUserRequestDto;
+import com.hrms.backend.dtos.entityDtos.User.request.UserUpdateProfileRequestDto;
+import com.hrms.backend.dtos.entityDtos.User.response.UserResponseDto;
+import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface UserServiceInterface {
 
     //create
-    UserDto createUser(UserDto userDto);
-
+    UserResponseDto createUser(CreateUserRequestDto createUserRequestDto);
     //update
-    UserDto updateUser(UserDto userDto,String userId);
-//
-//    //delete
-//    void deleteUser(String userId) throws IOException;
-//
-//    //getAllUser
-////    PageableResponse<UserDto> getAllUser(int pageNumber, int pageSize, String sortBy, String sortDir);
-//
+    UserResponseDto updateUser(UserUpdateProfileRequestDto userUpdateProfileRequestDto, String userId);
+
     //getUserById
-    UserDto getUserById(String userId);
-//
-//    //getUserByEmail
-//    UserDto getUserByEmail(String email);
-//
-//    //getUserBySearchKeyword
-////    List<UserDto> getUserByKeyword(String keyword);
+    UserResponseDto getUserById(String userId);
+
+    SuccessApiResponseMessage updateProfileImage(MultipartFile file, String userId);
+
+    SuccessApiResponseMessage updateCompanyCode(String companyCode, String userId);
+
+    SuccessApiResponseMessage leaveCurrentCompany(String userId);
+
+    SuccessApiResponseMessage retrieveFromWaitlistCompany(String userId);
+  //delete
+//    void deleteUser(String userId) throws IOException;
+
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.hrms.backend.entities;
 
-import com.hrms.backend.entities.enums.JoiningStatus;
+import com.hrms.backend.entities.enums.Department;
+import com.hrms.backend.entities.enums.Position;
 import com.hrms.backend.entities.enums.Role;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -10,7 +11,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -40,13 +43,19 @@ public class User implements UserDetails {
     private Role role;
 
     @Field(write = Field.Write.ALWAYS)
+    private String waitingCompanyCode;
+
+    @Field(write = Field.Write.ALWAYS)
     private String companyCode;
 
     @Field(write = Field.Write.ALWAYS)
-    private JoiningStatus joiningStatus;
+    private String imageUrl;
 
     @Field(write = Field.Write.ALWAYS)
-    private String imageUrl;
+    private Position position;
+
+    @Field(write = Field.Write.ALWAYS)
+    private Department department;
 
     @Field(write = Field.Write.ALWAYS)
     private Set<String> tasks = new HashSet<>();

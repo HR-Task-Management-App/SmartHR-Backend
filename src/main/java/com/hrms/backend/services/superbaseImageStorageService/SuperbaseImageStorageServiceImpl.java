@@ -1,5 +1,6 @@
 package com.hrms.backend.services.superbaseImageStorageService;
 
+import com.hrms.backend.exceptions.BadApiRequestException;
 import okhttp3.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,13 +39,13 @@ public class SuperbaseImageStorageServiceImpl implements SuperbaseImageStorageSe
             try (Response res = client.newCall(request).execute()) {
                 if (!res.isSuccessful()) {
                     String error = res.body() != null ? res.body().string() : "Unknown error";
-                    throw new RuntimeException("Image upload failed: " + error);
+                    throw new BadApiRequestException("Image upload failed: " + error);
                 }
                 return SUPABASE_URL + "/storage/v1/object/public/" + bucketName + "/" + fileName;
             }
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to upload image", e);
+            throw new BadApiRequestException("Failed to upload image, try again later!!");
         }
     }
 }

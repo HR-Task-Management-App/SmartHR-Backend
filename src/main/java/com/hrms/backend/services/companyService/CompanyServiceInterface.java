@@ -14,4 +14,6 @@ public interface CompanyServiceInterface {
     SuccessApiResponseMessage rejectEmployee(String hrUserId,String empUserId);
 
     SuccessApiResponseMessage removeEmployeeFromCompany(String hrUserId,String empUserId);
+
+
 }

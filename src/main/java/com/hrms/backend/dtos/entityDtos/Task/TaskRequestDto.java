@@ -1,11 +1,11 @@
 package com.hrms.backend.dtos.entityDtos.Task;
 
-import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.entities.enums.Priority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
 import java.util.Set;
 
 @Getter

@@ -1,7 +1,7 @@
 package com.hrms.backend.dtos.token_request_response;
 
 
-import com.hrms.backend.dtos.entityDtos.User.UserDto;
+import com.hrms.backend.dtos.entityDtos.User.response.UserResponseDto;
 import lombok.*;
 
 @Getter
@@ -12,5 +12,5 @@ import lombok.*;
 public class JwtResponse {
 
     private String token;
-    UserDto user;
+    UserResponseDto user;
 }
