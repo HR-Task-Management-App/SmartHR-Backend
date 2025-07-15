@@ -67,8 +67,15 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/users").permitAll()
                         .requestMatchers("/users/leave-company","/users/remove-wait-company").hasAuthority("ROLE_USER")
                         .requestMatchers("/users","/users/**").authenticated()
-                        .requestMatchers("/companies/**","/tasks").hasAuthority("ROLE_HR")
+                        .requestMatchers(HttpMethod.POST,"/tasks","/tasks/**").hasAuthority("ROLE_HR")
+                        .requestMatchers(HttpMethod.PUT,"/tasks/status").hasAnyAuthority("ROLE_HR","ROLE_USER")
+                        .requestMatchers(HttpMethod.PUT,"/tasks","/tasks/**").hasAuthority("ROLE_HR")
+                        .requestMatchers(HttpMethod.DELETE,"/tasks","/tasks/**").hasAuthority("ROLE_HR")
+                        .requestMatchers("/tasks","/tasks/**").hasAnyAuthority("ROLE_HR","ROLE_USER")
+                        .requestMatchers("/companies/**").hasAuthority("ROLE_HR")
+                        .requestMatchers("/comments","/comments/**").hasAnyAuthority("ROLE_HR","ROLE_USER")
                         .anyRequest().hasAuthority("ROLE_ADMIN")
+//                        .anyRequest().permitAll()
         ).exceptionHandling(ex -> ex
                 .accessDeniedHandler(customAccessDeniedHandler)
         );

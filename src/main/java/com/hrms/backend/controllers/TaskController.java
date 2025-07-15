@@ -1,18 +1,26 @@
 package com.hrms.backend.controllers;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hrms.backend.dtos.entityDtos.Task.TaskRequestDto;
+import com.hrms.backend.dtos.entityDtos.Task.TaskFullDetailResponseDto;
 import com.hrms.backend.dtos.entityDtos.Task.TaskResponseDto;
+import com.hrms.backend.dtos.entityDtos.Task.Validators.UpdateTaskStatusValidator;
+import com.hrms.backend.dtos.entityDtos.Task.Validators.UpdateTaskValidator;
+import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.security.JwtHelper;
 import com.hrms.backend.services.taskService.TaskServiceInterface;
+import jakarta.validation.groups.Default;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+
+import static java.util.stream.Collectors.toMap;
 
 @RestController
 @RequestMapping("/tasks")
@@ -27,15 +35,60 @@ public class TaskController {
     private final Logger logger = LoggerFactory.getLogger(TaskController.class);
 
     @PostMapping
-    public ResponseEntity<TaskResponseDto> createTask(
+    public ResponseEntity<TaskFullDetailResponseDto> createTask(
             @RequestHeader("Authorization") String authHeader,
-             @RequestParam(value = "data") String data,
-             @RequestParam(value = "image",required = false) MultipartFile image
-    ) throws JsonProcessingException {
+            @Validated({Default.class, UpdateTaskValidator.class}) @ModelAttribute TaskRequestDto taskRequestDto,
+            @RequestParam(value = "image",required = false) MultipartFile image
+    ) {
         String hrId = jwtHelper.getUserIdFromToken(authHeader.substring(7));
-        ObjectMapper objectMapper = new ObjectMapper();
-        TaskRequestDto taskRequestDto = objectMapper.readValue(data, TaskRequestDto.class);
-        TaskResponseDto task = taskServiceInterface.createTask(taskRequestDto, image, hrId);
+        TaskFullDetailResponseDto task = taskServiceInterface.createTask(taskRequestDto, image, hrId);
         return new ResponseEntity<>(task, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponseDto> getTaskById(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable("id") String id
+    ){
+        TaskResponseDto taskById = taskServiceInterface.getTaskById(id);
+        return new ResponseEntity<>(taskById,HttpStatus.OK);
+    }
+
+    @GetMapping("/user")
+    public ResponseEntity<List<TaskResponseDto>> getTasksOfUser(
+            @RequestHeader("Authorization") String authHeader
+    ){
+        String id = jwtHelper.getUserIdFromToken(authHeader.substring(7));
+        List<TaskResponseDto> tasks = taskServiceInterface.getTasks(id);
+        return new ResponseEntity<>(tasks,HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskResponseDto> updateTask(
+            @RequestHeader("Authorization") String authHeader,
+            @Validated({Default.class}) @RequestBody TaskRequestDto taskRequestDto,
+            @PathVariable("id") String id
+    ){
+        TaskResponseDto taskResponseDto = taskServiceInterface.updateTask(taskRequestDto, id);
+        return new ResponseEntity<>(taskResponseDto,HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<SuccessApiResponseMessage> deleteTask(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable("id") String id
+            ){
+        SuccessApiResponseMessage successApiResponseMessage = taskServiceInterface.deleteTask(id);
+        return new ResponseEntity<>(successApiResponseMessage,HttpStatus.OK);
+    }
+
+    @PutMapping("/status/{id}")
+    public ResponseEntity<TaskResponseDto> updateTaskStatus(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable("id") String id,
+            @Validated({UpdateTaskStatusValidator.class}) @RequestBody TaskRequestDto taskRequestDto
+            ){
+        TaskResponseDto taskResponseDto = taskServiceInterface.updateTaskStatus(taskRequestDto, id);
+        return new ResponseEntity<>(taskResponseDto,HttpStatus.OK);
     }
 }

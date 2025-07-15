@@ -7,6 +7,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import java.time.LocalDateTime;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,6 +28,10 @@ public class Task {
     private String title;
 
     private String description;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
     private Priority priority;
 

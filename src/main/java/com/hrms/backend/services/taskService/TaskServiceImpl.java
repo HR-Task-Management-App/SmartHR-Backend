@@ -1,8 +1,10 @@
 package com.hrms.backend.services.taskService;
 
 import com.hrms.backend.dtos.entityDtos.Task.TaskRequestDto;
+import com.hrms.backend.dtos.entityDtos.Task.TaskFullDetailResponseDto;
 import com.hrms.backend.dtos.entityDtos.Task.TaskResponseDto;
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
+import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.entities.Company;
 import com.hrms.backend.entities.Task;
 import com.hrms.backend.entities.User;
@@ -17,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TaskServiceImpl implements TaskServiceInterface{
@@ -40,7 +45,7 @@ public class TaskServiceImpl implements TaskServiceInterface{
     private static final String BUCKET_NAME = "task-images";
 
     @Override
-    public TaskResponseDto createTask(TaskRequestDto taskRequestDto, MultipartFile image, String hrId) {
+    public TaskFullDetailResponseDto createTask(TaskRequestDto taskRequestDto, MultipartFile image, String hrId) {
         // 1. Validate HR and Company
         Company company = companyRepository.findByHr(hrId)
                 .orElseThrow(() -> new BadApiRequestException("HR does not belong to any company"));
@@ -51,7 +56,6 @@ public class TaskServiceImpl implements TaskServiceInterface{
         // 2. Map task DTO to entity and populate fields
         Task task = mapper.map(taskRequestDto, Task.class);
         task.setCompanyCode(company.getCompanyCode());
-        task.setStatus(Status.NOT_STARTED);
         task.setAssignee(hrId); // HR is assigning the task
 
         // 3. Upload image if present
@@ -59,6 +63,9 @@ public class TaskServiceImpl implements TaskServiceInterface{
             String imageUrl = superbaseImageStorageServiceInterface.uploadImage(image, BUCKET_NAME);
             task.setImageUrl(imageUrl);
         }
+
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUpdatedAt(LocalDateTime.now());
 
         // 4. Save task first
         Task savedTask = taskRepository.save(task);
@@ -84,7 +91,7 @@ public class TaskServiceImpl implements TaskServiceInterface{
                         .build())
                 .toList();
 
-        TaskResponseDto response = mapper.map(savedTask, TaskResponseDto.class);
+        TaskFullDetailResponseDto response = mapper.map(savedTask, TaskFullDetailResponseDto.class);
         response.setAssignee(UserInfo.builder()
                 .id(hr.getId())
                 .email(hr.getEmail())
@@ -96,4 +103,47 @@ public class TaskServiceImpl implements TaskServiceInterface{
         return response;
     }
 
+    @Override
+    public TaskResponseDto getTaskById(String taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new BadApiRequestException("Task not found"));
+        return mapper.map(task, TaskResponseDto.class);
+    }
+
+    @Override
+    public List<TaskResponseDto> getTasks(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadApiRequestException("User not found!!"));
+
+        Set<String> taskIds = user.getTasks(); // Set of taskId (Strings)
+
+        List<Task> tasks = taskRepository.findAllById(taskIds);
+
+        return tasks.stream()
+                .map(task -> mapper.map(task, TaskResponseDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public TaskResponseDto updateTask(TaskRequestDto taskRequestDto, String taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new BadApiRequestException("Task not found"));
+        mapper.map(taskRequestDto, task);
+        task.setUpdatedAt(LocalDateTime.now());
+        Task save = taskRepository.save(task);
+        return mapper.map(save, TaskResponseDto.class);
+    }
+
+    @Override
+    public SuccessApiResponseMessage deleteTask(String taskId) {
+        taskRepository.deleteById(taskId);
+        return new SuccessApiResponseMessage("Successfully deleted the task");
+    }
+
+    @Override
+    public TaskResponseDto updateTaskStatus(TaskRequestDto taskRequestDto,String taskId) {
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new BadApiRequestException("Task not found, try again!!"));
+        task.setStatus(Status.valueOf(taskRequestDto.getStatus()));
+        task.setUpdatedAt(LocalDateTime.now());
+        Task saved = taskRepository.save(task);
+        return mapper.map(saved,TaskResponseDto.class);
+    }
 }
