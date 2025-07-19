@@ -1,13 +1,12 @@
 package com.hrms.backend.controllers;
 
 import com.hrms.backend.dtos.entityDtos.Task.TaskRequestDto;
-import com.hrms.backend.dtos.entityDtos.Task.TaskFullDetailResponseDto;
 import com.hrms.backend.dtos.entityDtos.Task.TaskResponseDto;
 import com.hrms.backend.dtos.entityDtos.Task.Validators.UpdateTaskStatusValidator;
-import com.hrms.backend.dtos.entityDtos.Task.Validators.UpdateTaskValidator;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.security.JwtHelper;
 import com.hrms.backend.services.taskService.TaskServiceInterface;
+import jakarta.validation.Valid;
 import jakarta.validation.groups.Default;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,13 +34,13 @@ public class TaskController {
     private final Logger logger = LoggerFactory.getLogger(TaskController.class);
 
     @PostMapping
-    public ResponseEntity<TaskFullDetailResponseDto> createTask(
+    public ResponseEntity<TaskResponseDto> createTask(
             @RequestHeader("Authorization") String authHeader,
-            @Validated({Default.class, UpdateTaskValidator.class}) @ModelAttribute TaskRequestDto taskRequestDto,
+            @Valid @ModelAttribute TaskRequestDto taskRequestDto,
             @RequestParam(value = "image",required = false) MultipartFile image
     ) {
         String hrId = jwtHelper.getUserIdFromToken(authHeader.substring(7));
-        TaskFullDetailResponseDto task = taskServiceInterface.createTask(taskRequestDto, image, hrId);
+        TaskResponseDto task = taskServiceInterface.createTask(taskRequestDto, image, hrId);
         return new ResponseEntity<>(task, HttpStatus.CREATED);
     }
 
@@ -54,19 +53,28 @@ public class TaskController {
         return new ResponseEntity<>(taskById,HttpStatus.OK);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<TaskResponseDto>> getTasksOfUser(
+    @GetMapping("/companyTasks")
+    public ResponseEntity<List<TaskResponseDto>> getCompanyTasks(
             @RequestHeader("Authorization") String authHeader
     ){
         String id = jwtHelper.getUserIdFromToken(authHeader.substring(7));
-        List<TaskResponseDto> tasks = taskServiceInterface.getTasks(id);
+        List<TaskResponseDto> tasks = taskServiceInterface.getCompanyTasks(id);
+        return new ResponseEntity<>(tasks,HttpStatus.OK);
+    }
+
+    @GetMapping("/userTasks")
+    public ResponseEntity<List<TaskResponseDto>> getUserTasks(
+            @RequestHeader("Authorization") String authHeader
+    ){
+        String id = jwtHelper.getUserIdFromToken(authHeader.substring(7));
+        List<TaskResponseDto> tasks = taskServiceInterface.getEmployeeTasks(id);
         return new ResponseEntity<>(tasks,HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponseDto> updateTask(
             @RequestHeader("Authorization") String authHeader,
-            @Validated({Default.class}) @RequestBody TaskRequestDto taskRequestDto,
+            @Validated({Default.class,UpdateTaskStatusValidator.class}) @RequestBody TaskRequestDto taskRequestDto,
             @PathVariable("id") String id
     ){
         TaskResponseDto taskResponseDto = taskServiceInterface.updateTask(taskRequestDto, id);

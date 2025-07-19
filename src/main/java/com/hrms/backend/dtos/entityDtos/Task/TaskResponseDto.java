@@ -6,6 +6,7 @@ import com.hrms.backend.entities.enums.Status;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class TaskResponseDto {
+
     private String id;
 
     private String imageUrl;
@@ -23,13 +25,15 @@ public class TaskResponseDto {
 
     private String description;
 
-    private LocalDateTime createdAt;
+    private String updatedAt;
 
-    private LocalDateTime updatedAt;
+    private String createdAt;
 
-    private Priority priority;
+    private String priority;
 
-    private Status status; //By default NotStarted
+    private String status; //By default NotStarted
 
-    private String assignee; //id
+    private UserInfo assignee; //id
+
+    private List<UserInfo> employees;
 }

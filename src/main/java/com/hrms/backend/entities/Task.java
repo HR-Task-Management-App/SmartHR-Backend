@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Builder
 @NoArgsConstructor
@@ -29,14 +30,16 @@ public class Task {
 
     private String description;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime updatedAt;
 
     private Priority priority;
 
-    private Status status; //By default NotStarted
+    private Status status = Status.NOT_STARTED; //By default NotStarted
 
     private String assignee; //HR id
+
+    private Set<String> employees;
 
 }

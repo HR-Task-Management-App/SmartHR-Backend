@@ -67,6 +67,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/users").permitAll()
                         .requestMatchers("/users/leave-company","/users/remove-wait-company").hasAuthority("ROLE_USER")
                         .requestMatchers("/users","/users/**").authenticated()
+                        .requestMatchers("/tasks/companyTasks").hasAuthority("ROLE_HR")
+                        .requestMatchers("/tasks/userTasks").hasAuthority("ROLE_USER")
                         .requestMatchers(HttpMethod.POST,"/tasks","/tasks/**").hasAuthority("ROLE_HR")
                         .requestMatchers(HttpMethod.PUT,"/tasks/status").hasAnyAuthority("ROLE_HR","ROLE_USER")
                         .requestMatchers(HttpMethod.PUT,"/tasks","/tasks/**").hasAuthority("ROLE_HR")
@@ -74,8 +76,10 @@ public class SecurityConfig {
                         .requestMatchers("/tasks","/tasks/**").hasAnyAuthority("ROLE_HR","ROLE_USER")
                         .requestMatchers("/companies/**").hasAuthority("ROLE_HR")
                         .requestMatchers("/comments","/comments/**").hasAnyAuthority("ROLE_HR","ROLE_USER")
+                        .requestMatchers("/leaves/status/**","/leaves/response/**").hasAuthority("ROLE_HR")
+                        .requestMatchers(HttpMethod.POST,"/leaves","/leaves/**").hasAuthority("ROLE_USER")
+                        .requestMatchers("/leaves","/leaves/**").hasAnyAuthority("ROLE_USER","ROLE_HR")
                         .anyRequest().hasAuthority("ROLE_ADMIN")
-//                        .anyRequest().permitAll()
         ).exceptionHandling(ex -> ex
                 .accessDeniedHandler(customAccessDeniedHandler)
         );

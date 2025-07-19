@@ -1,9 +1,6 @@
 package com.hrms.backend.dtos.entityDtos.Task;
 
 import com.hrms.backend.dtos.entityDtos.Task.Validators.UpdateTaskStatusValidator;
-import com.hrms.backend.dtos.entityDtos.Task.Validators.UpdateTaskValidator;
-import com.hrms.backend.entities.enums.Priority;
-import com.hrms.backend.entities.enums.Status;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
@@ -36,7 +33,7 @@ public class TaskRequestDto {
     @Pattern(regexp = "IN_PROGRESS|NOT_STARTED|FINISHED", message = "Priority must be IN_PROGRESS, NOT_STARTED, FINISHED")
     private String status;
 
-    @NotEmpty(groups = UpdateTaskValidator.class,message = "Please select employee to assign task")
+    @NotEmpty(message = "Please select employee to assign task")
     private Set<String> employees;
 
 }

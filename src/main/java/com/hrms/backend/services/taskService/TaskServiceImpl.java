@@ -1,13 +1,13 @@
 package com.hrms.backend.services.taskService;
 
 import com.hrms.backend.dtos.entityDtos.Task.TaskRequestDto;
-import com.hrms.backend.dtos.entityDtos.Task.TaskFullDetailResponseDto;
 import com.hrms.backend.dtos.entityDtos.Task.TaskResponseDto;
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.entities.Company;
 import com.hrms.backend.entities.Task;
 import com.hrms.backend.entities.User;
+import com.hrms.backend.entities.enums.Role;
 import com.hrms.backend.entities.enums.Status;
 import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.repositories.CompanyRepository;
@@ -45,7 +45,7 @@ public class TaskServiceImpl implements TaskServiceInterface{
     private static final String BUCKET_NAME = "task-images";
 
     @Override
-    public TaskFullDetailResponseDto createTask(TaskRequestDto taskRequestDto, MultipartFile image, String hrId) {
+    public TaskResponseDto createTask(TaskRequestDto taskRequestDto, MultipartFile image, String hrId) {
         // 1. Validate HR and Company
         Company company = companyRepository.findByHr(hrId)
                 .orElseThrow(() -> new BadApiRequestException("HR does not belong to any company"));
@@ -57,50 +57,22 @@ public class TaskServiceImpl implements TaskServiceInterface{
         Task task = mapper.map(taskRequestDto, Task.class);
         task.setCompanyCode(company.getCompanyCode());
         task.setAssignee(hrId); // HR is assigning the task
+        task.setCreatedAt(LocalDateTime.now());
+        task.setUpdatedAt(LocalDateTime.now());
 
+        //allowing only user that are present in company and database
+        List<User> users = userRepository.findAllByCompanyCodeAndIdIn(company.getCompanyCode(),taskRequestDto.getEmployees());
+        Set<String>  realEmp = users.stream().map(User::getId).collect(Collectors.toSet());
+        task.setEmployees(realEmp);
         // 3. Upload image if present
         if (image != null && !image.isEmpty()) {
             String imageUrl = superbaseImageStorageServiceInterface.uploadImage(image, BUCKET_NAME);
             task.setImageUrl(imageUrl);
         }
 
-        task.setCreatedAt(LocalDateTime.now());
-        task.setUpdatedAt(LocalDateTime.now());
-
-        // 4. Save task first
         Task savedTask = taskRepository.save(task);
 
-        // 5. Assign task to HR
-        hr.getTasks().add(savedTask.getId());
-        userRepository.save(hr);
-
-        // 6. Assign task to selected employees
-        List<User> employees = userRepository.findAllByIdIn(taskRequestDto.getEmployees());
-        for (User emp : employees) {
-            emp.getTasks().add(savedTask.getId());
-        }
-        userRepository.saveAll(employees);
-
-        // 7. Prepare response
-        List<UserInfo> employeeInfos = employees.stream()
-                .map(emp -> UserInfo.builder()
-                        .id(emp.getId())
-                        .name(emp.getName())
-                        .email(emp.getEmail())
-                        .imageUrl(emp.getImageUrl())
-                        .build())
-                .toList();
-
-        TaskFullDetailResponseDto response = mapper.map(savedTask, TaskFullDetailResponseDto.class);
-        response.setAssignee(UserInfo.builder()
-                .id(hr.getId())
-                .email(hr.getEmail())
-                .name(hr.getName())
-                .imageUrl(hr.getImageUrl())
-                .build());
-        response.setEmployees(employeeInfos);
-
-        return response;
+        return mapper.map(savedTask, TaskResponseDto.class);
     }
 
     @Override
@@ -110,24 +82,29 @@ public class TaskServiceImpl implements TaskServiceInterface{
     }
 
     @Override
-    public List<TaskResponseDto> getTasks(String userId) {
-        User user = userRepository.findById(userId)
+    public List<TaskResponseDto> getCompanyTasks(String hrId) {
+        User user = userRepository.findById(hrId)
                 .orElseThrow(() -> new BadApiRequestException("User not found!!"));
-
-        Set<String> taskIds = user.getTasks(); // Set of taskId (Strings)
-
-        List<Task> tasks = taskRepository.findAllById(taskIds);
-
-        return tasks.stream()
-                .map(task -> mapper.map(task, TaskResponseDto.class))
-                .collect(Collectors.toList());
+        List<Task> tasks = taskRepository.findAllByCompanyCode(user.getCompanyCode());
+        return tasks.stream().map(task -> mapper.map(task, TaskResponseDto.class)).toList();
     }
 
     @Override
-    public TaskResponseDto updateTask(TaskRequestDto taskRequestDto, String taskId) {
+    public List<TaskResponseDto> getEmployeeTasks(String userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new BadApiRequestException("User not found!!"));
+        List<Task> tasks = taskRepository.findAllByCompanyCodeAndEmployeesContaining(user.getCompanyCode(),userId);
+        return tasks.stream().map(task -> mapper.map(task, TaskResponseDto.class)).toList();
+    }
+
+    @Override
+    public TaskResponseDto updateTask(TaskRequestDto taskRequestDto, String taskId) { //hr
         Task task = taskRepository.findById(taskId).orElseThrow(() -> new BadApiRequestException("Task not found"));
         mapper.map(taskRequestDto, task);
         task.setUpdatedAt(LocalDateTime.now());
+        List<User> users = userRepository.findAllByCompanyCodeAndIdIn(task.getCompanyCode(),taskRequestDto.getEmployees());
+        Set<String>  realEmp = users.stream().map(User::getId).collect(Collectors.toSet());
+        task.setEmployees(realEmp);
         Task save = taskRepository.save(task);
         return mapper.map(save, TaskResponseDto.class);
     }

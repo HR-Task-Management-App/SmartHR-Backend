@@ -57,8 +57,8 @@ public class User implements UserDetails {
     @Field(write = Field.Write.ALWAYS)
     private Department department;
 
-    @Field(write = Field.Write.ALWAYS)
-    private Set<String> tasks = new HashSet<>();
+//    @Field(write = Field.Write.ALWAYS)
+//    private Set<String> tasks = new HashSet<>();
 
 
     @Override
