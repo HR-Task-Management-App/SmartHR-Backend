@@ -3,7 +3,7 @@ package com.hrms.backend.controllers;
 import com.hrms.backend.dtos.entityDtos.User.response.UserResponseDto;
 import com.hrms.backend.dtos.token_request_response.JwtRequest;
 import com.hrms.backend.dtos.token_request_response.JwtResponse;
-import com.hrms.backend.entities.User;
+import com.hrms.backend.models.User;
 import com.hrms.backend.repositories.UserRepository;
 import com.hrms.backend.security.JwtHelper;
 import org.modelmapper.ModelMapper;

@@ -1,7 +1,7 @@
 package com.hrms.backend;
 
-import com.hrms.backend.entities.User;
-import com.hrms.backend.entities.enums.Role;
+import com.hrms.backend.models.User;
+import com.hrms.backend.models.enums.Role;
 import com.hrms.backend.repositories.UserRepository;
 import com.hrms.backend.services.superbaseImageStorageService.SuperbaseImageStorageServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;

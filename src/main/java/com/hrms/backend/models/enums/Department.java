@@ -1,4 +1,4 @@
-package com.hrms.backend.entities.enums;
+package com.hrms.backend.models.enums;
 
 public enum Department { //departments in a company, used in USER entity
     HR,

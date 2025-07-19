@@ -1,6 +1,6 @@
 package com.hrms.backend.repositories;
 
-import com.hrms.backend.entities.Comment;
+import com.hrms.backend.models.Comment;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;

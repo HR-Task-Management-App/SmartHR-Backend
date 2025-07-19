@@ -1,7 +1,7 @@
-package com.hrms.backend.entities;
+package com.hrms.backend.models;
 
-import com.hrms.backend.entities.enums.LeaveStatus;
-import com.hrms.backend.entities.enums.LeaveType;
+import com.hrms.backend.models.enums.LeaveStatus;
+import com.hrms.backend.models.enums.LeaveType;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

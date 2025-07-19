@@ -1,7 +1,7 @@
-package com.hrms.backend.entities;
+package com.hrms.backend.models;
 
-import com.hrms.backend.entities.enums.Priority;
-import com.hrms.backend.entities.enums.Status;
+import com.hrms.backend.models.enums.Priority;
+import com.hrms.backend.models.enums.Status;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

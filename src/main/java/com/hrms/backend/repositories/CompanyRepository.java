@@ -1,6 +1,6 @@
 package com.hrms.backend.repositories;
 
-import com.hrms.backend.entities.Company;
+import com.hrms.backend.models.Company;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 

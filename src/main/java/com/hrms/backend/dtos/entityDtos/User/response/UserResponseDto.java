@@ -1,7 +1,7 @@
 package com.hrms.backend.dtos.entityDtos.User.response;
 
-import com.hrms.backend.entities.enums.Department;
-import com.hrms.backend.entities.enums.Position;
+import com.hrms.backend.models.enums.Department;
+import com.hrms.backend.models.enums.Position;
 import lombok.*;
 
 @Getter

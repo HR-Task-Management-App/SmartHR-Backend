@@ -1,4 +1,4 @@
-package com.hrms.backend.entities.enums;
+package com.hrms.backend.models.enums;
 
 public enum Priority {
     LOW,

@@ -1,8 +1,8 @@
-package com.hrms.backend.entities;
+package com.hrms.backend.models;
 
-import com.hrms.backend.entities.enums.Department;
-import com.hrms.backend.entities.enums.Position;
-import com.hrms.backend.entities.enums.Role;
+import com.hrms.backend.models.enums.Department;
+import com.hrms.backend.models.enums.Position;
+import com.hrms.backend.models.enums.Role;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

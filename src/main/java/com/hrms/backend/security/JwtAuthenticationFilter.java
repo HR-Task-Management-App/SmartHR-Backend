@@ -1,7 +1,7 @@
 package com.hrms.backend.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hrms.backend.entities.User;
+import com.hrms.backend.models.User;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
