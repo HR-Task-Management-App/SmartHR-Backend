@@ -3,7 +3,6 @@ package com.hrms.backend.dtos.entityDtos.User.response;
 import com.hrms.backend.entities.enums.Department;
 import com.hrms.backend.entities.enums.Position;
 import lombok.*;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 @Getter
 @Setter

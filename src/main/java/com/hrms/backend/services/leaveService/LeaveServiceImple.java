@@ -11,7 +11,6 @@ import com.hrms.backend.entities.enums.LeaveStatus;
 import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.exceptions.ResourceNotFoundException;
 import com.hrms.backend.repositories.LeaveRepository;
-import com.hrms.backend.repositories.UserRepository;
 import com.hrms.backend.services.userService.UserServiceInterface;
 import com.hrms.backend.utils.DateValidator;
 import org.modelmapper.ModelMapper;
@@ -20,7 +19,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LeaveServiceImple implements LeaveServiceInterface {

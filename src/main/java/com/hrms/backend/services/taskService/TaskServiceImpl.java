@@ -2,12 +2,10 @@ package com.hrms.backend.services.taskService;
 
 import com.hrms.backend.dtos.entityDtos.Task.TaskRequestDto;
 import com.hrms.backend.dtos.entityDtos.Task.TaskResponseDto;
-import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.entities.Company;
 import com.hrms.backend.entities.Task;
 import com.hrms.backend.entities.User;
-import com.hrms.backend.entities.enums.Role;
 import com.hrms.backend.entities.enums.Status;
 import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.repositories.CompanyRepository;

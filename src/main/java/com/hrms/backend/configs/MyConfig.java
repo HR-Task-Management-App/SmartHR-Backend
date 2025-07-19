@@ -1,12 +1,10 @@
 package com.hrms.backend.configs;
 
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
-import com.hrms.backend.dtos.entityDtos.User.response.UserResponseDto;
 import com.hrms.backend.entities.User;
 import com.hrms.backend.entities.enums.LeaveStatus;
 import com.hrms.backend.entities.enums.LeaveType;
 import com.hrms.backend.repositories.UserRepository;
-import com.hrms.backend.services.userService.UserServiceInterface;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;

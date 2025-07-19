@@ -1,11 +1,8 @@
 package com.hrms.backend.dtos.entityDtos.Task;
 
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
-import com.hrms.backend.entities.enums.Priority;
-import com.hrms.backend.entities.enums.Status;
 import lombok.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter

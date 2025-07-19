@@ -5,7 +5,6 @@ import com.hrms.backend.dtos.entityDtos.Comment.CommentResponseDto;
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.entityDtos.User.response.UserResponseDto;
 import com.hrms.backend.entities.Comment;
-import com.hrms.backend.entities.User;
 import com.hrms.backend.repositories.CommentRepository;
 import com.hrms.backend.services.userService.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
