@@ -5,7 +5,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
 public class EncryptionUtil {
-    private static final String SECRET_KEY = "your-256-bit-secret"; // Store safely
+    private static final String SECRET_KEY = "Z8rJ5qTdFy0hWvN9x8ZUbWgkz2NpvB1Q"; // Store safely
     private static final String ALGO = "AES";
 
     public static String encrypt(String data) throws Exception {
