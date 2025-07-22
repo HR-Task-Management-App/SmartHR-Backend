@@ -56,10 +56,6 @@ public class User implements UserDetails {
     @Field(write = Field.Write.ALWAYS)
     private Department department;
 
-//    @Field(write = Field.Write.ALWAYS)
-//    private Set<String> tasks = new HashSet<>();
-
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Set.of(new SimpleGrantedAuthority(role.name()));

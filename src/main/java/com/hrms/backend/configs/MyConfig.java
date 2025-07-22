@@ -1,12 +1,16 @@
 package com.hrms.backend.configs;
 
+import com.hrms.backend.dtos.entityDtos.Meeting.MeetingResponseInfo;
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
+import com.hrms.backend.exceptions.ResourceNotFoundException;
 import com.hrms.backend.models.User;
 import com.hrms.backend.models.enums.LeaveStatus;
 import com.hrms.backend.models.enums.LeaveType;
+import com.hrms.backend.models.MeetingResponse;
 import com.hrms.backend.repositories.UserRepository;
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Conditions;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -78,6 +82,15 @@ public class MyConfig {
                 return users.stream().map(userById-> UserInfo.builder().name(userById.getName()).id(userById.getId()).email(userById.getEmail()).imageUrl(userById.getImageUrl()).build()).collect(Collectors.toList());
             }
         });
+
+        Converter<MeetingResponse, MeetingResponseInfo> meetingResponseToInfoConverter = ctx -> {
+            MeetingResponse source = ctx.getSource();
+            User user = userRepository.findById(source.getParticipant())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+            UserInfo userInfo = new UserInfo(user.getId(), user.getName(), user.getEmail(), user.getImageUrl());
+            return new MeetingResponseInfo(userInfo, source.getStatus());
+        };
 
         return modelMapper;
     }

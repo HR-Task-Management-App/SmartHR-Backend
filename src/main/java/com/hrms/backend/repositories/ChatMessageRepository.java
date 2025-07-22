@@ -1,15 +1,21 @@
 package com.hrms.backend.repositories;
 
 import com.hrms.backend.models.ChatMessage;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
 public interface ChatMessageRepository extends MongoRepository<ChatMessage, String> {
-    List<ChatMessage> findAllByCompanyCodeAndSenderIdAndReceiverIdOrderByTimestampAsc(
-        String companyCode, String senderId, String receiverId);
 
-    List<ChatMessage> findAllByReceiverIdAndDeliveredFalse(String receiverId);
+    @Query("{ 'companyCode': ?0, '$or': [ " +
+            "{ 'sender': ?1, 'receiver': ?2 }, " +
+            "{ 'sender': ?2, 'receiver': ?1 } ] }")
+    List<ChatMessage> findChatHistoryBetweenUsers(String companyCode, String userId, String otherUserId, Sort sort);
+
+
 }
