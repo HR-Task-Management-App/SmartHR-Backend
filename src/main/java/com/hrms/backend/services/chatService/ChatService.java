@@ -3,13 +3,17 @@ package com.hrms.backend.services.chatService;
 import com.hrms.backend.dtos.entityDtos.ChatMessage.ChatMessageRequestDto;
 import com.hrms.backend.dtos.entityDtos.ChatMessage.ChatMessageResponseDto;
 import com.hrms.backend.dtos.entityDtos.ChatMessage.ChatResponseDto;
+import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
+import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.models.Chat;
 import com.hrms.backend.models.ChatMessage;
+import com.hrms.backend.models.User;
 import com.hrms.backend.models.enums.MessageStatus;
 import com.hrms.backend.models.enums.MessageType;
 import com.hrms.backend.repositories.ChatMessageRepository;
 import com.hrms.backend.repositories.ChatRepository;
+import com.hrms.backend.repositories.UserRepository;
 import com.hrms.backend.utils.EncryptionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -38,7 +42,7 @@ public class ChatService {
             String otherUserId,
             String companyCode
     ){
-        Sort sort = Sort.by(Sort.Direction.DESC, "timestamp");
+        Sort sort = Sort.by(Sort.Direction.ASC, "timestamp");
 
         List<ChatMessage> messages = messageRepository.findChatHistoryBetweenUsers(
                 companyCode, userId, otherUserId,sort

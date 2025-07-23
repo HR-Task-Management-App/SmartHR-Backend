@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 public class ChatResponseDto {
 
     private String id;
-    private String chatId;
 
     private UserInfo user1;
     private UserInfo user2;

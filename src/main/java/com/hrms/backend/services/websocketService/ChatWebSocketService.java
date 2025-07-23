@@ -23,11 +23,21 @@ public class ChatWebSocketService {
     private ModelMapper mapper;
 
     public void processMessage(ChatMessageRequestDto chatMessageRequestDto) {
-
         ChatMessageResponseDto chatMessageResponseDto = chatService.saveMessage(chatMessageRequestDto);
 
-        messagingTemplate.convertAndSendToUser( //for private chatting 1 to 1
-                chatMessageResponseDto.getReceiver().getId(),   // Spring will internally send to /user/{receiverId}/queue/messages
+        String senderId = chatMessageResponseDto.getSender().getId();
+        String receiverId = chatMessageResponseDto.getReceiver().getId();
+
+        // Send to receiver
+        messagingTemplate.convertAndSendToUser(
+                receiverId,
+                "/queue/messages",
+                chatMessageResponseDto
+        );
+
+        // Send to sender (back to themselves)
+        messagingTemplate.convertAndSendToUser(
+                senderId,
                 "/queue/messages",
                 chatMessageResponseDto
         );

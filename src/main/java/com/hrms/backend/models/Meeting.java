@@ -23,6 +23,7 @@ public class Meeting {
     private String description;
     private String organizer; // User who created the meeting // HR
     private String companyCode;
+    private String meetingLink;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Set<String> participants; // employees

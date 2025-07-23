@@ -17,6 +17,7 @@ public class MeetingResponseDto {
     private String description;
     private String organizer;
     private String companyCode;
+    private String meetingLink;
     private String startTime;
     private String endTime;
     private Set<UserInfo> participants;

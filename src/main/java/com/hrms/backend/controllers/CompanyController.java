@@ -1,5 +1,6 @@
 package com.hrms.backend.controllers;
 
+import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.entityDtos.User.UserListResponse;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.security.JwtHelper;
@@ -10,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/companies")
@@ -70,5 +73,14 @@ public class CompanyController {
         String hrId = jwtHelper.getUserIdFromToken(authHeader.substring(7));
         SuccessApiResponseMessage successApiResponseMessage = companyServiceInterface.removeEmployeeFromCompany(hrId, userId);
         return new ResponseEntity<>(successApiResponseMessage,HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/everybody") // for chat, Hr and employee can call it
+    public ResponseEntity<List<UserInfo>> getEveryUserAndHrOfCompany(
+            @RequestHeader("Authorization") String authHeader
+            ){
+        String userId = jwtHelper.getUserIdFromToken(authHeader.substring(7));
+        List<UserInfo> everyBodyOfCompany = companyServiceInterface.getEveryBodyOfCompany(userId);
+        return new ResponseEntity<>(everyBodyOfCompany,HttpStatus.OK);
     }
 }

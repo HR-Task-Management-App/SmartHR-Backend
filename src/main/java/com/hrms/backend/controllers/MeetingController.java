@@ -5,6 +5,7 @@ import com.hrms.backend.dtos.entityDtos.Meeting.MeetingResponseDto;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.security.JwtHelper;
 import com.hrms.backend.services.meetingService.MeetingServiceInterface;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,5 +59,26 @@ public class MeetingController {
         String hrId = jwtHelper.getUserIdFromToken(authHeader.substring(7));
         SuccessApiResponseMessage successApiResponseMessage = meetingServiceInterface.cancelMeeting(meetingId, hrId);
         return ResponseEntity.ok(successApiResponseMessage);
+    }
+
+    @GetMapping("/{meetingId}")
+    public ResponseEntity<MeetingResponseDto> getMeetingById(
+            @RequestHeader("Authorization") String authHeader,
+            @PathVariable String meetingId
+    ){
+        String userId = jwtHelper.getUserIdFromToken(authHeader.substring(7));
+        MeetingResponseDto meetingById = meetingServiceInterface.getMeetingById(meetingId, userId);
+        return new ResponseEntity<>(meetingById,HttpStatus.OK);
+    }
+
+    @PostMapping("/{meetingId}")
+    public ResponseEntity<MeetingResponseDto> editMeetingDetails(
+            @RequestHeader("Authorization") String authHeader,
+            @Valid @RequestBody MeetingRequestDto meetingRequestDto,
+            @PathVariable String meetingId
+    ){
+        String userId = jwtHelper.getUserIdFromToken(authHeader.substring(7));
+        MeetingResponseDto meeting = meetingServiceInterface.editMeetingDetails(meetingRequestDto,meetingId, userId);
+        return new ResponseEntity<>(meeting,HttpStatus.OK);
     }
 }

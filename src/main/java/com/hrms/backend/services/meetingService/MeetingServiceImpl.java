@@ -129,6 +129,26 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
         return new SuccessApiResponseMessage("Meeting cancelled successfully");
     }
 
+    public MeetingResponseDto getMeetingById(String meetingId,String userId){
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadApiRequestException("Meeting not found"));
+
+        if (!meeting.getOrganizer().equals(userId) && !meeting.getParticipants().contains(userId)) {
+            throw new BadApiRequestException("You are not authorized to get the meeting details");
+        }
+        return mapper.map(meeting, MeetingResponseDto.class);
+    }
+
+    public MeetingResponseDto editMeetingDetails(MeetingRequestDto meetingRequestDto,String meetingId,String userId){
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new BadApiRequestException("Meeting not found"));
+        if (!meeting.getOrganizer().equals(userId)) {
+            throw new BadApiRequestException("Unauthorized to edit this meeting.");
+        }
+        mapper.map(meetingRequestDto,meeting);
+        return mapper.map(meeting, MeetingResponseDto.class);
+    }
+
 
 
 }

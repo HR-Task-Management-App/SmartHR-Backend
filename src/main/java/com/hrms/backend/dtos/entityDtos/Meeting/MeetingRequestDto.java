@@ -26,6 +26,9 @@ public class MeetingRequestDto {
     @ValidDateTimeFormat
     private String startTime;
 
+    @NotBlank(message = "Meeting link is required")
+    private String meetingLink;
+
     @NotBlank(message = "End time is required.")
     @ValidDateTimeFormat
     private String endTime;

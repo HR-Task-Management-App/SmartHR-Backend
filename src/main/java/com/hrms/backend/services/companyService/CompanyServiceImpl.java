@@ -3,16 +3,19 @@ package com.hrms.backend.services.companyService;
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.entityDtos.User.UserListResponse;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
+import com.hrms.backend.exceptions.ResourceNotFoundException;
 import com.hrms.backend.models.Company;
 import com.hrms.backend.models.User;
 import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.repositories.CompanyRepository;
 import com.hrms.backend.repositories.UserRepository;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CompanyServiceImpl implements CompanyServiceInterface {
@@ -23,6 +26,9 @@ public class CompanyServiceImpl implements CompanyServiceInterface {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ModelMapper mapper;
 
     @Override
     public UserListResponse getWaitlistEmployees(String hrUserId) {
@@ -117,5 +123,18 @@ public class CompanyServiceImpl implements CompanyServiceInterface {
         return new SuccessApiResponseMessage("Employee successfully removed from the company");
     }
 
-
+    @Override
+    public List<UserInfo> getEveryBodyOfCompany(String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found!!"));
+        String companyCode = user.getCompanyCode();
+        companyRepository.findByCompanyCode(companyCode).orElseThrow(()-> new ResourceNotFoundException("Company does not exist!!"));
+        List<User> allUsers = userRepository.findAllByCompanyCode(companyCode);
+        return allUsers.stream().map(user1->
+                UserInfo.builder().name(user1.getName())
+                        .id(user1.getId())
+                        .email(user1.getEmail())
+                        .imageUrl(user1.getImageUrl())
+                        .build()
+        ).toList();
+    }
 }

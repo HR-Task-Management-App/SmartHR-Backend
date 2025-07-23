@@ -15,4 +15,8 @@ public interface MeetingServiceInterface {
     SuccessApiResponseMessage userRespondToMeeting(String meetingId, String userId, String status);
 
     SuccessApiResponseMessage cancelMeeting(String meetingId, String hrId);
+
+    MeetingResponseDto getMeetingById(String meetingId,String userId);
+
+    MeetingResponseDto editMeetingDetails(MeetingRequestDto meetingRequestDto,String meetingId,String userId);
 }
