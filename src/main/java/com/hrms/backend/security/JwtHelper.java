@@ -1,7 +1,7 @@
 package com.hrms.backend.security;
 
-import com.hrms.backend.models.User;
 import com.hrms.backend.exceptions.BadApiRequestException;
+import com.hrms.backend.models.User;
 import com.hrms.backend.repositories.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

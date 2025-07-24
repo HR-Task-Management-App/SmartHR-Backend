@@ -4,7 +4,6 @@ import com.hrms.backend.models.ChatMessage;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,5 +16,5 @@ public interface ChatMessageRepository extends MongoRepository<ChatMessage, Stri
             "{ 'sender': ?2, 'receiver': ?1 } ] }")
     List<ChatMessage> findChatHistoryBetweenUsers(String companyCode, String userId, String otherUserId, Sort sort);
 
-
+    List<ChatMessage> findByChatIdAndMessageStatus(String chatId,String messageStatus);
 }

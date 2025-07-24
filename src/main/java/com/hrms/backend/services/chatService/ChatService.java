@@ -3,22 +3,20 @@ package com.hrms.backend.services.chatService;
 import com.hrms.backend.dtos.entityDtos.ChatMessage.ChatMessageRequestDto;
 import com.hrms.backend.dtos.entityDtos.ChatMessage.ChatMessageResponseDto;
 import com.hrms.backend.dtos.entityDtos.ChatMessage.ChatResponseDto;
-import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
-import com.hrms.backend.exceptions.BadApiRequestException;
+import com.hrms.backend.exceptions.ResourceNotFoundException;
 import com.hrms.backend.models.Chat;
 import com.hrms.backend.models.ChatMessage;
-import com.hrms.backend.models.User;
 import com.hrms.backend.models.enums.MessageStatus;
 import com.hrms.backend.models.enums.MessageType;
 import com.hrms.backend.repositories.ChatMessageRepository;
 import com.hrms.backend.repositories.ChatRepository;
-import com.hrms.backend.repositories.UserRepository;
 import com.hrms.backend.utils.EncryptionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -36,6 +34,9 @@ public class ChatService {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     public List<ChatMessageResponseDto> getHistory(
             String userId,
@@ -120,6 +121,7 @@ public class ChatService {
         chat.setCompanyCode(chatMessageRequestDto.getCompanyCode());
         chat.setLastMessageType(MessageType.valueOf(chatMessageRequestDto.getMessageType()));
         chat.setLastMessageStatus(MessageStatus.DELIVERED); // reset seen status on new message
+        chat.setLastMessageSender(chatMessageRequestDto.getSender());
         Chat chat1 = chatRepository.save(chat);
 
         message.setChatId(chat1.getId());
@@ -128,5 +130,29 @@ public class ChatService {
         responseDto.setContent(chatMessageRequestDto.getContent());
         return responseDto;
     }
+
+
+    public void markMessagesAsSeen(String chatId, String userId) {
+        List<ChatMessage> chatMessages = messageRepository.findByChatIdAndMessageStatus(chatId, "DELIVERED");
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new ResourceNotFoundException("Chat does not exist"));
+
+        for (ChatMessage msg : chatMessages) {
+            // Only mark messages as seen if the receiver is the user
+            if (msg.getReceiver().equals(userId)) {
+                msg.setMessageStatus(MessageStatus.SEEN);
+                messageRepository.save(msg);
+            }
+        }
+
+        // (only if last message was sent to this user)
+        if (chat.getLastMessageSender() != null && !chat.getLastMessageSender().equals(userId)) {
+            chat.setLastMessageStatus(MessageStatus.SEEN);
+            chatRepository.save(chat);
+        }
+    }
+
+
+
 
 }

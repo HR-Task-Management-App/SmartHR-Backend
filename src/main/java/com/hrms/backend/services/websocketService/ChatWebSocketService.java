@@ -2,6 +2,9 @@ package com.hrms.backend.services.websocketService;
 
 import com.hrms.backend.dtos.entityDtos.ChatMessage.ChatMessageRequestDto;
 import com.hrms.backend.dtos.entityDtos.ChatMessage.ChatMessageResponseDto;
+import com.hrms.backend.dtos.entityDtos.ChatMessage.SeenMessagePayload;
+import com.hrms.backend.models.Chat;
+import com.hrms.backend.repositories.ChatRepository;
 import com.hrms.backend.services.chatService.ChatService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -18,6 +21,9 @@ public class ChatWebSocketService {
 
     @Autowired
     private ChatService chatService;
+
+    @Autowired
+    private ChatRepository chatRepository;
 
     @Autowired
     private ModelMapper mapper;
@@ -42,4 +48,22 @@ public class ChatWebSocketService {
                 chatMessageResponseDto
         );
     }
+
+    public void handleSeenMessage(SeenMessagePayload payload) {
+        String chatId = payload.getChatId();
+        String receiverId = payload.getUserId();
+
+        chatService.markMessagesAsSeen(chatId, receiverId);
+
+        // Notify sender
+        Chat chat = chatRepository.findById(chatId).orElseThrow();
+        String senderId = chat.getUser1().equals(receiverId) ? chat.getUser2() : chat.getUser1();
+
+        messagingTemplate.convertAndSendToUser(
+                senderId,
+                "/queue/message-seen",
+                new SeenMessagePayload(chatId,receiverId)
+        );
+    }
+
 }

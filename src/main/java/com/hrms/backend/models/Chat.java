@@ -19,7 +19,7 @@ public class Chat {
     @Id
     private String id;
 
-    private String user1; // lexographically smaller
+    private String user1;
     private String user2;
 
     private String lastMessage;
@@ -29,4 +29,6 @@ public class Chat {
 
     private MessageType lastMessageType;
     private MessageStatus lastMessageStatus;
+    private String lastMessageSender; // senderId
+    private String lastSeenMessageId;
 }

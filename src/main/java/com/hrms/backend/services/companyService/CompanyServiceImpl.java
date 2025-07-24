@@ -3,10 +3,10 @@ package com.hrms.backend.services.companyService;
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.entityDtos.User.UserListResponse;
 import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
+import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.exceptions.ResourceNotFoundException;
 import com.hrms.backend.models.Company;
 import com.hrms.backend.models.User;
-import com.hrms.backend.exceptions.BadApiRequestException;
 import com.hrms.backend.repositories.CompanyRepository;
 import com.hrms.backend.repositories.UserRepository;
 import org.modelmapper.ModelMapper;
@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class CompanyServiceImpl implements CompanyServiceInterface {
