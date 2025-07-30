@@ -1,4 +1,4 @@
-package com.hrms.backend.dtos.token_request_response;
+package com.hrms.backend.dtos.entityDtos.LoginSignUp;
 
 
 import com.hrms.backend.dtos.entityDtos.User.response.UserResponseDto;

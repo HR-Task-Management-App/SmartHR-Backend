@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -91,6 +92,50 @@ public class MyConfig {
             UserInfo userInfo = new UserInfo(user.getId(), user.getName(), user.getEmail(), user.getImageUrl());
             return new MeetingResponseInfo(userInfo, source.getStatus());
         };
+        // Register the converter
+        modelMapper.createTypeMap(MeetingResponse.class, MeetingResponseInfo.class)
+                .setConverter(meetingResponseToInfoConverter);
+
+
+        // String → Double converter
+        modelMapper.addConverter(new AbstractConverter<String, Double>() {
+            @Override
+            protected Double convert(String source) {
+                try {
+                    return source != null ? Double.parseDouble(source) : null;
+                } catch (NumberFormatException e) {
+                    return null; // or handle exception as needed
+                }
+            }
+        });
+
+// Double → String converter
+        modelMapper.addConverter(new AbstractConverter<Double, String>() {
+            @Override
+            protected String convert(Double source) {
+                return source != null ? source.toString() : null;
+            }
+        });
+
+        //String to Instant
+        modelMapper.addConverter(new AbstractConverter<String, Instant>() {
+            @Override
+            protected Instant convert(String source) {
+                return source != null ? Instant.parse(source) : null;
+            }
+        });
+
+        //Instant to String
+        modelMapper.addConverter(new AbstractConverter<Instant, String>() {
+            @Override
+            protected String convert(Instant source) {
+                return source != null ? source.toString() : null;
+            }
+        });
+
+
+
+
 
         return modelMapper;
     }

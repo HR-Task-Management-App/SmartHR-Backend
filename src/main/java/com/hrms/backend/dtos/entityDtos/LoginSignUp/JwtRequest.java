@@ -1,4 +1,4 @@
-package com.hrms.backend.dtos.token_request_response;
+package com.hrms.backend.dtos.entityDtos.LoginSignUp;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
