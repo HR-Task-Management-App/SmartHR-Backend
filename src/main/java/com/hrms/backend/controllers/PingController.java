@@ -5,6 +5,7 @@ import com.hrms.backend.dtos.response_message.SuccessApiResponseMessage;
 import com.hrms.backend.security.JwtHelper;
 import com.hrms.backend.services.userService.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,11 +22,8 @@ public class PingController {
     private JwtHelper jwtHelper;
 
     @GetMapping
-    private SuccessApiResponseMessage getUserProfileForPing(
-            @RequestHeader("Authorization") String authHeader
+    private ResponseEntity<SuccessApiResponseMessage> getUserProfileForPing(
     ){
-        String userId = jwtHelper.getUserIdFromToken(authHeader.substring(7));
-        UserResponseDto userById = userServiceInterface.getUserById(userId);
-        return new SuccessApiResponseMessage("Ping success");
+        return ResponseEntity.ok(new SuccessApiResponseMessage("Ping success"));
     }
 }
