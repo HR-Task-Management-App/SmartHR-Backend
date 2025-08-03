@@ -30,9 +30,13 @@ public class User implements UserDetails {
 
     private String email;
 
+    @Field(write = Field.Write.ALWAYS)
     private String phone;
 
+    @Field(write = Field.Write.ALWAYS)
     private String password;
+
+    private Boolean isGoogleUser = false;
 
     @Field(write = Field.Write.ALWAYS)
     private String gender;
