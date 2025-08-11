@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -144,46 +145,65 @@ public class AuthenticationController {
         }
 
         GoogleIdToken.Payload payload = idToken.getPayload();
-        String email = payload.getEmail();
+        String email = (String) payload.get("email");
 
+        // Check if user already exists
         Optional<User> existingUser = userRepository.findByEmail(email);
-
         if (existingUser.isPresent()) {
             throw new BadApiRequestException("User already registered with this email");
         }
 
-        // Create new user
+        // Create new User object
         User newUser = User.builder()
                 .email(email)
                 .name((String) payload.get("name"))
                 .imageUrl((String) payload.get("picture"))
-                .role(Role.valueOf(request.getRole())) // Ensure enum matches (ROLE_USER or ROLE_HR)
+                .role(Role.valueOf(request.getRole())) // Either ROLE_HR or ROLE_USER
                 .isGoogleUser(true)
+                .createdAt(LocalDateTime.now().toString())
                 .build();
 
-        if(newUser.getRole().equals(Role.ROLE_HR)){
-            String companyCode = CodeGenerator.generateBase64Code();;
-            while(companyRepository.findByCompanyCode(companyCode).isPresent()){
+        if (newUser.getRole().equals(Role.ROLE_HR)) {
+            // Generate unique company code
+            String companyCode = CodeGenerator.generateBase64Code();
+            while (companyRepository.findByCompanyCode(companyCode).isPresent()) {
                 companyCode = CodeGenerator.generateBase64Code();
             }
             newUser.setCompanyCode(companyCode);
+
+            // Save HR user
+            User savedUser = userRepository.save(newUser);
+
+            // Create and save company
+            Company company = Company.builder()
+                    .companyCode(companyCode)
+                    .hr(savedUser.getId())
+                    .createdDate(LocalDateTime.now().toString())
+                    .build();
+            companyRepository.save(company);
+
+            // Generate JWT
+            String jwt = jwtHelper.generateToken(savedUser, savedUser.getRole().name());
+            UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
+            JwtResponse jwtResponse = JwtResponse.builder()
+                    .user(userResponseDto)
+                    .token(jwt)
+                    .build();
+            return ResponseEntity.ok(jwtResponse);
+
+        } else {
+            // ROLE_USER – no company code provided
+            User savedUser = userRepository.save(newUser);
+
+            // Generate JWT
+            String jwt = jwtHelper.generateToken(savedUser, savedUser.getRole().name());
+            UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
+            JwtResponse jwtResponse = JwtResponse.builder()
+                    .user(userResponseDto)
+                    .token(jwt)
+                    .build();
+            return ResponseEntity.ok(jwtResponse);
         }
-
-
-        User savedUser = userRepository.save(newUser);
-
-        Company company = Company.builder().hr(savedUser.getId()).companyCode(savedUser.getCompanyCode()).build();
-        companyRepository.save(company);
-
-        String jwt = jwtHelper.generateToken(savedUser, savedUser.getRole().name());
-        UserResponseDto userResponseDto = modelMapper.map(savedUser, UserResponseDto.class);
-
-        JwtResponse jwtResponse = JwtResponse.builder()
-                .user(userResponseDto)
-                .token(jwt)
-                .build();
-
-        return ResponseEntity.ok(jwtResponse);
     }
 
 }
