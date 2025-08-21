@@ -42,6 +42,20 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
     //HR
     public MeetingResponseDto scheduleMeeting(String hrId,MeetingRequestDto dto) {
         User user = userRepository.findById(hrId).orElseThrow(() -> new BadApiRequestException("Not authorized to create meetings"));
+
+        LocalDateTime startTime = LocalDateTime.parse(dto.getStartTime());
+        LocalDateTime endTime   = LocalDateTime.parse(dto.getEndTime());
+
+        // Checking if meeting is in the past
+        if (startTime.isBefore(LocalDateTime.now())) {
+            throw new BadApiRequestException("Cannot schedule a meeting in the past");
+        }
+
+        // validating endTime > startTime
+        if (!endTime.isAfter(startTime)) {
+            throw new BadApiRequestException("Meeting end time must be after start time");
+        }
+
         for (String participant : dto.getParticipants()) {
             boolean conflict = meetingRepository.existsByCompanyCodeAndParticipantsContainsAndStartTimeLessThanEqualAndEndTimeGreaterThanEqual(
                     user.getCompanyCode(), participant, LocalDateTime.parse(dto.getEndTime()), LocalDateTime.parse(dto.getStartTime())
@@ -145,7 +159,20 @@ public class MeetingServiceImpl implements MeetingServiceInterface {
         if (!meeting.getOrganizer().equals(userId)) {
             throw new BadApiRequestException("Unauthorized to edit this meeting.");
         }
+        LocalDateTime startTime = LocalDateTime.parse(meetingRequestDto.getStartTime());
+        LocalDateTime endTime   = LocalDateTime.parse(meetingRequestDto.getEndTime());
+
+        // Checking if meeting is in the past
+        if (startTime.isBefore(LocalDateTime.now())) {
+            throw new BadApiRequestException("Cannot schedule a meeting in the past");
+        }
+
+        // validating endTime > startTime
+        if (!endTime.isAfter(startTime)) {
+            throw new BadApiRequestException("Meeting end time must be after start time");
+        }
         mapper.map(meetingRequestDto,meeting);
+        meetingRepository.save(meeting);
         return mapper.map(meeting, MeetingResponseDto.class);
     }
 

@@ -2,10 +2,13 @@ package com.hrms.backend.services.commentService;
 
 import com.hrms.backend.dtos.entityDtos.Comment.CommentRequestDto;
 import com.hrms.backend.dtos.entityDtos.Comment.CommentResponseDto;
+import com.hrms.backend.dtos.entityDtos.Task.TaskResponseDto;
 import com.hrms.backend.dtos.entityDtos.User.UserInfo;
 import com.hrms.backend.dtos.entityDtos.User.response.UserResponseDto;
 import com.hrms.backend.models.Comment;
 import com.hrms.backend.repositories.CommentRepository;
+import com.hrms.backend.repositories.CompanyRepository;
+import com.hrms.backend.services.taskService.TaskServiceInterface;
 import com.hrms.backend.services.userService.UserServiceInterface;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +23,14 @@ public class CommentServiceImpl implements CommentService {
     private CommentRepository commentRepository;
     @Autowired
     private UserServiceInterface userServiceInterface;
+    @Autowired
+    private TaskServiceInterface taskServiceInterface;
+    @Autowired
+    private CompanyRepository companyRepository;
 
     @Override
     public CommentResponseDto addComment(String userId, CommentRequestDto dto) {
+        TaskResponseDto taskResponseDto = taskServiceInterface.getTaskById(dto.getTaskId());
         Comment comment = Comment.builder()
             .taskId(dto.getTaskId())
             .userId(userId)
