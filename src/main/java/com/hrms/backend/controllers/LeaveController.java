@@ -24,7 +24,7 @@ public class LeaveController {
     @Autowired
     private LeaveServiceInterface leaveServiceInterface;
 
-    @PostMapping
+    @PostMapping //ROLE_USER
     public ResponseEntity<EmployeeLeaveResponseDto> submitLeaveRequest(
         @Valid @RequestBody LeaveRequestDto leaveRequestDto,
         @RequestHeader("Authorization") String auth
@@ -34,7 +34,7 @@ public class LeaveController {
         return new ResponseEntity<>(employeeLeaveResponseDto, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping // ROLE_USER
     public ResponseEntity<List<EmployeeLeaveResponseDto>> getEmployeeLeaveDetails(
             @RequestHeader("Authorization") String auth
     ){
@@ -43,7 +43,7 @@ public class LeaveController {
         return new ResponseEntity<>(employeeLeavesDetailById,HttpStatus.OK);
     }
 
-    @GetMapping("/company")
+    @GetMapping("/company") //ROLE_HR
     public ResponseEntity<List<HRLeaveResponseDto>> getCompanyLeaveRequests(
             @RequestHeader("Authorization") String auth
     ){
@@ -52,7 +52,7 @@ public class LeaveController {
         return new ResponseEntity<>(leaveRequestsOfCompany,HttpStatus.OK);
     }
 
-    @PostMapping("/{leaveId}")
+    @PostMapping("/{leaveId}") //ROLE_USER
     public ResponseEntity<EmployeeLeaveResponseDto> updateLeaveRequestDetail(
             @PathVariable("leaveId") String leaveId,
             @Valid @RequestBody LeaveRequestDto leaveRequestDto,
@@ -63,7 +63,7 @@ public class LeaveController {
         return new ResponseEntity<>(employeeLeaveResponseDto,HttpStatus.OK);
     }
 
-    @PostMapping("/status/{leaveId}/{status}") //hr
+    @PostMapping("/status/{leaveId}/{status}") //ROLE_HR
     private ResponseEntity<SuccessApiResponseMessage> updateStatusOfLeave(
             @PathVariable("leaveId") String leaveId,
             @PathVariable("status") String status,
@@ -74,7 +74,7 @@ public class LeaveController {
         return new ResponseEntity<>(successApiResponseMessage,HttpStatus.OK);
     }
 
-    @PostMapping("/response/{leaveId}")
+    @PostMapping("/response/{leaveId}") //ROLE_HR
     private ResponseEntity<SuccessApiResponseMessage> removeHRResponseFromLeave(
             @PathVariable("leaveId") String leaveId,
             @RequestHeader("Authorization") String auth

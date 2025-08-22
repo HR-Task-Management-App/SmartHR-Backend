@@ -21,7 +21,7 @@ public class CommentController {
     @Autowired
     private CommentService commentService;
 
-    @PostMapping
+    @PostMapping//ROLE_HR,ROLE_USER
     public ResponseEntity<CommentResponseDto> addComment(
             @RequestHeader("Authorization") String authHeader,
             @RequestBody @Valid CommentRequestDto dto
@@ -30,7 +30,7 @@ public class CommentController {
         return ResponseEntity.ok(commentService.addComment(userId, dto));
     }
 
-    @GetMapping("/{taskId}")
+    @GetMapping("/{taskId}")//ROLE_HR,ROLE_USER
     public ResponseEntity<List<CommentResponseDto>> getTaskComments(@PathVariable String taskId) {
         return ResponseEntity.ok(commentService.getCommentsByTask(taskId));
     }

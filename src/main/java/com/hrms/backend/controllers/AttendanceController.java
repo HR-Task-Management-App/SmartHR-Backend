@@ -23,7 +23,7 @@ public class AttendanceController {
     private JwtHelper jwtHelper;
 
     // Endpoint to mark check-in or check-out
-    @PostMapping
+    @PostMapping//ROLE_HR,ROLE_USER
     public AttendanceResponseDto markAttendance(
             @RequestHeader("Authorization") String authHeader,
             @RequestBody AttendanceRequestDto attendanceRequestDto
@@ -33,7 +33,7 @@ public class AttendanceController {
     }
 
     // Get attendance history of a specific employee
-    @GetMapping("/history")
+    @GetMapping("/history")//ROLE_HR,ROLE_USER
     public List<AttendanceResponseDto> getEmployeeAttendanceHistory(
             @RequestHeader("Authorization") String authHeader
             ) {
@@ -42,7 +42,7 @@ public class AttendanceController {
     }
 
     // HR: Get company-wide attendance for a specific date (optional)
-    @GetMapping("/company")
+    @GetMapping("/company")//ROLE_HR,ROLE_USER
     public List<AttendanceResponseDto> getCompanyAttendanceByDate(
             @RequestHeader("Authorization") String authHeader,
             @RequestParam(name = "date", required = false)

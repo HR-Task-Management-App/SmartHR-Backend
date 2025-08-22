@@ -19,7 +19,7 @@ public class OfficeController {
     @Autowired
     private OfficeServiceInterface officeServiceInterface;
 
-    @PostMapping
+    @PostMapping // ROLE_HR
     public ResponseEntity<OfficeLocationResponseDto> createOffice(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody OfficeLocationRequestDto officeLocationRequestDto
@@ -29,7 +29,7 @@ public class OfficeController {
         return ResponseEntity.ok(officeLocation);
     }
 
-    @PutMapping("/{officeId}")
+    @PutMapping("/{officeId}") //ROLE_HR
     public ResponseEntity<OfficeLocationResponseDto> updateOfficeDetails(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable("officeId") String officeId,
@@ -41,7 +41,7 @@ public class OfficeController {
     }
 
 
-    @GetMapping
+    @GetMapping // ROLE_HR,ROLE_USER
     public ResponseEntity<OfficeLocationResponseDto> getOfficeDetails(
             @RequestHeader("Authorization") String authHeader
     ){

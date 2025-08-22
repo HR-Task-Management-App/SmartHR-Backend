@@ -23,7 +23,7 @@ public class MeetingController {
     @Autowired
     private JwtHelper jwtHelper;
 
-    @PostMapping("/create")
+    @PostMapping("/create") //ROLE_HR
     public ResponseEntity<MeetingResponseDto> create(
             @RequestHeader("Authorization") String authHeader,
             @RequestBody MeetingRequestDto dto
@@ -32,7 +32,7 @@ public class MeetingController {
         return ResponseEntity.ok(meetingServiceInterface.scheduleMeeting(hrId,dto));
     }
 
-    @GetMapping("/myMeetings")
+    @GetMapping("/myMeetings") //ROLE_HR,ROLE_USER
     public ResponseEntity<List<MeetingResponseDto>> myMeetings(
             @RequestHeader("Authorization") String authHeader
     ) {
@@ -40,7 +40,7 @@ public class MeetingController {
         return new ResponseEntity<>(meetingServiceInterface.getMyMeetings(userId), HttpStatus.CREATED);
     }
 
-    @PostMapping("/respond/{meetingId}")
+    @PostMapping("/respond/{meetingId}") //ROLE_USER
     public ResponseEntity<SuccessApiResponseMessage> respond(
         @PathVariable String meetingId,
         @RequestHeader("Authorization") String authHeader,
@@ -51,7 +51,7 @@ public class MeetingController {
         return ResponseEntity.ok(successApiResponseMessage);
     }
 
-    @PostMapping("/cancel/{meetingId}")
+    @PostMapping("/cancel/{meetingId}") //ROLE_HR
     public ResponseEntity<SuccessApiResponseMessage> cancel(
             @PathVariable String meetingId,
             @RequestHeader("Authorization") String authHeader
@@ -61,7 +61,7 @@ public class MeetingController {
         return ResponseEntity.ok(successApiResponseMessage);
     }
 
-    @GetMapping("/{meetingId}")
+    @GetMapping("/{meetingId}")//ROLE_HR,ROLE_USER
     public ResponseEntity<MeetingResponseDto> getMeetingById(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String meetingId
@@ -71,7 +71,7 @@ public class MeetingController {
         return new ResponseEntity<>(meetingById,HttpStatus.OK);
     }
 
-    @PostMapping("/{meetingId}")
+    @PostMapping("/{meetingId}") //ROLE_HR
     public ResponseEntity<MeetingResponseDto> editMeetingDetails(
             @RequestHeader("Authorization") String authHeader,
             @Valid @RequestBody MeetingRequestDto meetingRequestDto,

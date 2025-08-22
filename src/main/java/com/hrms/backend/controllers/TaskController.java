@@ -31,7 +31,7 @@ public class TaskController {
 
     private final Logger logger = LoggerFactory.getLogger(TaskController.class);
 
-    @PostMapping
+    @PostMapping // ROLE_HR
     public ResponseEntity<TaskResponseDto> createTask(
             @RequestHeader("Authorization") String authHeader,
             @Valid @ModelAttribute TaskRequestDto taskRequestDto,
@@ -42,7 +42,7 @@ public class TaskController {
         return new ResponseEntity<>(task, HttpStatus.CREATED);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") //ROLE_HR,ROLE_USER
     public ResponseEntity<TaskResponseDto> getTaskById(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable("id") String id
@@ -51,7 +51,7 @@ public class TaskController {
         return new ResponseEntity<>(taskById,HttpStatus.OK);
     }
 
-    @GetMapping("/companyTasks")
+    @GetMapping("/companyTasks") //ROLE_HR
     public ResponseEntity<List<TaskResponseDto>> getCompanyTasks(
             @RequestHeader("Authorization") String authHeader
     ){
@@ -60,7 +60,7 @@ public class TaskController {
         return new ResponseEntity<>(tasks,HttpStatus.OK);
     }
 
-    @GetMapping("/userTasks")
+    @GetMapping("/userTasks") //ROLE_USER
     public ResponseEntity<List<TaskResponseDto>> getUserTasks(
             @RequestHeader("Authorization") String authHeader
     ){
@@ -69,7 +69,7 @@ public class TaskController {
         return new ResponseEntity<>(tasks,HttpStatus.OK);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/{id}") //ROLE_HR
     public ResponseEntity<TaskResponseDto> updateTask(
             @RequestHeader("Authorization") String authHeader,
             @Validated({Default.class,UpdateTaskStatusValidator.class}) @RequestBody TaskRequestDto taskRequestDto,
@@ -79,7 +79,7 @@ public class TaskController {
         return new ResponseEntity<>(taskResponseDto,HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/{id}") //ROLE_HR
     public ResponseEntity<SuccessApiResponseMessage> deleteTask(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable("id") String id
@@ -88,7 +88,7 @@ public class TaskController {
         return new ResponseEntity<>(successApiResponseMessage,HttpStatus.OK);
     }
 
-    @PutMapping("/status/{id}")
+    @PutMapping("/status/{id}") //ROLE_HR,ROLE_USER
     public ResponseEntity<TaskResponseDto> updateTaskStatus(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable("id") String id,

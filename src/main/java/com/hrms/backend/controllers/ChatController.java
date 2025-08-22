@@ -29,7 +29,7 @@ public class ChatController {
     @Autowired
     private JwtHelper jwtHelper;
 
-    @GetMapping("/history")
+    @GetMapping("/history")//ROLE_HR,ROLE_USER
     public ResponseEntity<List<ChatMessageResponseDto>>getMessages(
             @RequestHeader("Authorization") String authHeader,
             @RequestParam String otherUserId,
@@ -41,7 +41,7 @@ public class ChatController {
     }
 
 
-    @GetMapping("/myChats")
+    @GetMapping("/myChats")//ROLE_HR,ROLE_USER
     public ResponseEntity<List<ChatResponseDto>> getMyChats(
             @RequestHeader("Authorization") String authHeader,
             @RequestParam  String companyCode
@@ -51,7 +51,7 @@ public class ChatController {
         return new ResponseEntity<>(chats,HttpStatus.OK);
     }
 
-    @PutMapping("/seen/{chatId}")
+    @PutMapping("/seen/{chatId}")//ROLE_HR,ROLE_USER
     public ResponseEntity<SuccessApiResponseMessage> markMessagesAsSeen(
             @PathVariable String chatId,
             @RequestParam String userId

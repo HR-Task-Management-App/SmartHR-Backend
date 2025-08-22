@@ -25,7 +25,7 @@ public class CompanyController {
     @Autowired
     private CompanyServiceInterface companyServiceInterface;
 
-    @GetMapping("/empWaitlist")
+    @GetMapping("/empWaitlist") //ROLE_HR
     public ResponseEntity<UserListResponse> getCompanyWaitlistEmployee(
             @RequestHeader("Authorization") String authHeader
     ){
@@ -35,7 +35,7 @@ public class CompanyController {
         return new  ResponseEntity<>(waitlistEmployeesId,HttpStatus.OK);
     }
 
-    @GetMapping("/employees")
+    @GetMapping("/employees") //ROLE_HR
     public ResponseEntity<UserListResponse> getEmployeesOfCompany(
             @RequestHeader("Authorization") String authHeader
     ){
@@ -45,7 +45,7 @@ public class CompanyController {
         return new  ResponseEntity<>(employeesOfCompany,HttpStatus.OK);
     }
 
-    @PostMapping("/acceptEmployee/{userId}")
+    @PostMapping("/acceptEmployee/{userId}") ////ROLE_HR
     public ResponseEntity<SuccessApiResponseMessage> acceptEmployeeToJoinCompany(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String userId
@@ -55,7 +55,7 @@ public class CompanyController {
         return new ResponseEntity<>(successApiResponseMessage,HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/rejectEmployee/{userId}")
+    @PostMapping("/rejectEmployee/{userId}")  //ROLE_HR
     public ResponseEntity<SuccessApiResponseMessage> rejectEmployeeFromJoiningCompany(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String userId
@@ -65,7 +65,7 @@ public class CompanyController {
         return new ResponseEntity<>(successApiResponseMessage,HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/removeEmployee/{userId}")
+    @DeleteMapping("/removeEmployee/{userId}")  //ROLE_HR
     public ResponseEntity<SuccessApiResponseMessage> removeEmployeeFromCompany(
             @RequestHeader("Authorization") String authHeader,
             @PathVariable String userId
@@ -75,7 +75,7 @@ public class CompanyController {
         return new ResponseEntity<>(successApiResponseMessage,HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/everybody") // for chat, Hr and employee can call it
+    @GetMapping("/everybody") //ROLE_HR,ROLE_USER
     public ResponseEntity<List<UserInfo>> getEveryUserAndHrOfCompany(
             @RequestHeader("Authorization") String authHeader
             ){

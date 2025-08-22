@@ -27,13 +27,13 @@ public class UserController {
     @Autowired
     private JwtHelper jwtHelper;
 
-    @PostMapping //create
+    @PostMapping //ROLE_USER,ROLE_HR
     public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody CreateUserRequestDto createUserRequestDto){
         UserResponseDto user =  userServiceInterface.createUser(createUserRequestDto);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
-    @GetMapping
+    @GetMapping //ROLE_USER,ROLE_HR
     public ResponseEntity<UserResponseDto> getUserProfile(
             @RequestHeader("Authorization") String authHeader
     ){
@@ -41,7 +41,7 @@ public class UserController {
         return new ResponseEntity<>(userServiceInterface.getUserById(userId),HttpStatus.OK);
     }
 
-    @PostMapping("/profile-image")
+    @PostMapping("/profile-image") //ROLE_USER,ROLE_HR
     public ResponseEntity<SuccessApiResponseMessage> updateProfileImage(
             @RequestHeader("Authorization") String authHeader,
             @RequestParam("image") MultipartFile image
@@ -50,7 +50,7 @@ public class UserController {
         return new ResponseEntity<>(userServiceInterface.updateProfileImage(image, userId),HttpStatus.CREATED);
     }
 
-    @PatchMapping
+    @PatchMapping //ROLE_USER,ROLE_HR
     public ResponseEntity<UserResponseDto> updateProfile(
             @RequestHeader("Authorization") String authHeader,
             @RequestBody @Valid UserUpdateProfileRequestDto userUpdateProfileRequestDto
