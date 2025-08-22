@@ -46,6 +46,7 @@ public class AttendanceServiceImpl implements AttendanceServiceInterface{
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not valid!!"));
         String companyCode = user.getCompanyCode();
+        if(user.getCompanyCode()==null || user.getCompanyCode().isBlank()) throw new BadApiRequestException("Employee is not connected to any company");
         Company company = companyRepository.findByCompanyCode(companyCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Not a valid company!!"));
 
@@ -110,7 +111,7 @@ public class AttendanceServiceImpl implements AttendanceServiceInterface{
     public List<AttendanceResponseDto> getEmployeeAttendanceHistory(String userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User is not valid!!"));
-
+        if(user.getCompanyCode()==null || user.getCompanyCode().isBlank()) throw new BadApiRequestException("Employee is not connected to any company");
         String companyCode = user.getCompanyCode();
         companyRepository.findByCompanyCode(companyCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Not a valid company!!"));
