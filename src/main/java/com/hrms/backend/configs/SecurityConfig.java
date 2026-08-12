@@ -66,6 +66,9 @@ public class SecurityConfig {
                         .requestMatchers(PUBLIC_URLS).permitAll() // later do for user controller only for hr {companyCode part}
                         .requestMatchers(HttpMethod.POST,"/auth/**").permitAll()
                         .requestMatchers(HttpMethod.POST,"/users").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/users/**").permitAll()
+                        .requestMatchers(HttpMethod.PATCH,"/users").permitAll()
+                        .requestMatchers(HttpMethod.PATCH,"/users/**").permitAll()
                         .requestMatchers("/chat-websocket","/chat-websocket/**", "/webrtc/**").permitAll()
                         .requestMatchers("/ping").permitAll()
                         .requestMatchers("/chat","/chat/**").permitAll()
